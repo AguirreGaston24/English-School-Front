@@ -4,6 +4,7 @@ import { PublicRoute } from './public-routes'
 import { PrivateRoute } from './private-route'
 import { LoginScreen } from '../screens/auth'
 import { MainLayout } from '../components/layout'
+import { HomeScreen } from '../screens'
 
 export const AppRouter = () => {
   return (
@@ -22,7 +23,7 @@ export const AppRouter = () => {
         element={
           <PrivateRoute>
             <MainLayout>
-              <h1>Dashboard</h1>
+             <HomeScreen/>
             </MainLayout>
           </PrivateRoute>
         }
