@@ -2,6 +2,7 @@ import { BrowserRouter } from 'react-router-dom';
 import ReactDOM from 'react-dom/client';
 
 import { ThemeProvider } from './context/theme';
+import { AuthProvider } from './context/auth';
 import { AppRouter } from './router';
 import './index.css';
 
@@ -11,7 +12,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <BrowserRouter>
     <ThemeProvider>
-      <AppRouter />
+      <AuthProvider>
+        <AppRouter />
+      </AuthProvider>
     </ThemeProvider>
   </BrowserRouter>
 );
