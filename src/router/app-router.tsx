@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom'
 import { PublicRoute } from './public-routes'
 import { PrivateRoute } from './private-route'
 import { LoginScreen } from '../screens/auth'
+import { MainLayout } from '../components/layout'
 
 export const AppRouter = () => {
   return (
@@ -20,7 +21,9 @@ export const AppRouter = () => {
         path="/*"
         element={
           <PrivateRoute>
-            <h1>Dashboard</h1>
+            <MainLayout>
+              <h1>Dashboard</h1>
+            </MainLayout>
           </PrivateRoute>
         }
       />
