@@ -3,11 +3,13 @@ import { MdMenu } from 'react-icons/md'
 
 import { useAuthContext } from '../../context/auth';
 import { useTheme } from '../../context/theme';
+import { useUiContext } from '../../context/ui';
 
 type Theme = 'dark' | 'light';
 
 export const Header = () => {
   const { user, handleLogout } = useAuthContext()
+  const { setOpenMenu } = useUiContext()
   const { setTheme } = useTheme();
 
 
@@ -33,12 +35,12 @@ export const Header = () => {
   return (
     <div className="fixed top-0 left-0 right-0 supports-backdrop-blur:bg-background/60 border-b bg-background/95 backdrop-blur z-20">
       <nav className="h-14 flex items-center justify-between px-4">
-        <div className="hidden lg:block">
+        <div className="hidden xl:block">
           <img className="w-24" src={''} alt="Logo del Instituto" />
         </div>
         <div
-          className="block lg:!hidden cursor-pointer"
-        // onClick={() => setOpenMenu(true)}  
+          className="block xl:!hidden cursor-pointer"
+          onClick={() => setOpenMenu(true)}
         >
           <MdMenu />
         </div>
