@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-export const TeacherSchema = z.object({
+export const groupSchema = z.object({
   firstname: z.string(),
   lastname: z.string(),
-  birth_date: z.string(),
+  end_date: z.string(),
   start_date: z.string(),
   DNI: z.string(),
   email: z.string().email(),
@@ -14,4 +14,4 @@ export const TeacherSchema = z.object({
   dni: z.string(),
 })
 
-export type TeacherType = z.infer<typeof TeacherSchema>
+export type groupType = z.infer<typeof groupSchema>

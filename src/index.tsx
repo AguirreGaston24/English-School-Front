@@ -1,8 +1,8 @@
 import { BrowserRouter } from 'react-router-dom';
 import ReactDOM from 'react-dom/client';
+import { Toaster } from 'sonner'
 
-import { ThemeProvider } from './context/theme';
-import { AuthProvider } from './context/auth';
+import { AuthProvider, DataProvider, ThemeProvider } from './context';
 import { AppRouter } from './router';
 import './index.css';
 
@@ -13,7 +13,10 @@ root.render(
   <BrowserRouter>
     <ThemeProvider>
       <AuthProvider>
-        <AppRouter />
+        <DataProvider>
+          <AppRouter />
+          <Toaster />
+        </DataProvider>
       </AuthProvider>
     </ThemeProvider>
   </BrowserRouter>

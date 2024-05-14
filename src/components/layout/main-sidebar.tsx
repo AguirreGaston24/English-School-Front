@@ -1,15 +1,15 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { FaUser } from "react-icons/fa";
+import { FaBirthdayCake, FaHome } from "react-icons/fa"
 import { FaCircleDollarToSlot } from "react-icons/fa6";
-import { MdGroups } from "react-icons/md";
-import { IoIosSchool } from "react-icons/io";
-import { IoReceipt } from "react-icons/io5"
 import { LuClipboardList } from "react-icons/lu"
 import { FaRankingStar } from "react-icons/fa6"
-import { FaBirthdayCake } from "react-icons/fa"
-import { FaDoorClosed } from "react-icons/fa"
+import { IoIosSchool } from "react-icons/io";
+import { IoReceipt } from "react-icons/io5"
+import { MdGroups } from "react-icons/md";
+import { FaUser } from "react-icons/fa";
 import { Menu } from 'antd'
 
+import { useUiContext } from "../../context/ui";
 import { cn } from '../../libs/utils'
 
 interface SidebarProps {
@@ -17,11 +17,12 @@ interface SidebarProps {
 }
 
 export const Sidebar = ({ className }: SidebarProps) => {
+  const { setOpenMenu } = useUiContext()
   const location = useLocation()
   const navigate = useNavigate()
 
   const handleNavigate = (path: string) => {
-    // setOpenMenu(false)
+    setOpenMenu(false)
     navigate(path)
   }
 
@@ -36,44 +37,50 @@ export const Sidebar = ({ className }: SidebarProps) => {
         items={[
           {
             key: '/',
-            icon: <FaUser size={20} />,
-            label: 'Alumnos',
+            icon: <FaHome size={20} />,
+            label: 'Inicio',
             onClick: () => handleNavigate('/')
           },
           {
-            key: '/profesoras',
+            key: '/students',
+            icon: <FaUser size={20} />,
+            label: 'Alumnos',
+            onClick: () => handleNavigate('/students')
+          },
+          {
+            key: '/teachers',
             icon: <IoIosSchool size={20} />,
             label: 'Profesoras',
-            onClick: () => handleNavigate('/profesoras')
+            onClick: () => handleNavigate('/teachers')
           },
           {
-            key: '/grupos',
+            key: '/groups',
             icon: <MdGroups size={20} />,
             label: 'Grupos',
-            onClick: () => handleNavigate('/grupos')
+            onClick: () => handleNavigate('/groups')
           },
           {
-            key: '/cuotas-alumnos',
+            key: '/assists',
             icon: <FaCircleDollarToSlot size={20} />,
-            label: 'Cuotas-Alumnos',
-            onClick: () => handleNavigate('/cuotas-alumnos')
+            label: 'Asistencias',
+            onClick: () => handleNavigate('/assists')
           },
           {
             key: '/pagos-profesores',
             icon: <FaCircleDollarToSlot size={20} />,
-            label: 'Pagos-profesores',
+            label: 'Pagos Profesores',
             onClick: () => handleNavigate('/pagos-profesores')
           },
           {
             key: '/recibos-alumnos',
             icon: <IoReceipt size={20} />,
-            label: 'Recibos-alumnos',
+            label: 'Recibos Alumnos',
             onClick: () => handleNavigate('/recibos-alumnos')
           },
           {
             key: '/listado-alumnos',
             icon: <LuClipboardList size={20} />,
-            label: 'Listado-alumnos',
+            label: 'Listado Alumnos',
             onClick: () => handleNavigate('/listado-alumnos')
           },
           {
@@ -85,14 +92,8 @@ export const Sidebar = ({ className }: SidebarProps) => {
           {
             key: '/cumpleaños-alumnos',
             icon: <FaBirthdayCake size={20} />,
-            label: 'Cumpleaños-alumnos',
+            label: 'Cumpleaños Alumnos',
             onClick: () => handleNavigate('/cumpleaños-alumnos')
-          },
-          {
-            key: '/salir',
-            icon: <FaDoorClosed size={20} />,
-            label: 'Salir',
-            onClick: () => handleNavigate('/salir')
           },
         ]}
       />

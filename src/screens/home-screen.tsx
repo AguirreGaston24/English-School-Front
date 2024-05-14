@@ -1,41 +1,74 @@
-import { Table } from 'antd'
+import { Card } from 'antd'
+import { PiStudentBold } from "react-icons/pi";
 
-const dataSource = [
-  {
-    key: '1',
-    name: 'Mike',
-    age: 32,
-    address: '10 Downing Street',
-  },
-  {
-    key: '2',
-    name: 'John',
-    age: 42,
-    address: '10 Downing Street',
-  },
-];
-
-const columns = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
-  },
-  {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
-  },
-  {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address',
-  },
-];
-
+import { StudentsTable } from '../components/table';
+import { useDataContext } from '../context/data';
 
 export const HomeScreen = () => {
+
+  const { students } = useDataContext()
+
   return (
-    <div><Table dataSource={dataSource} columns={columns} /></div>
+    <div className='space-y-4'>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="shadow-md">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <div className="text-xl font-medium">
+              Alumnos
+            </div>
+            <PiStudentBold size={24} />
+          </div>
+          <div>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-xs text-muted-foreground">
+              Todos los alumnos registrados
+            </p>
+          </div>
+        </Card>
+        <Card className="shadow-md">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <div className="text-xl font-medium">
+              Alumnos
+            </div>
+            <PiStudentBold size={24} />
+          </div>
+          <div>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-xs text-muted-foreground">
+              Todos los alumnos registrados
+            </p>
+          </div>
+        </Card>
+        <Card className="shadow-md">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <div className="text-xl font-medium">
+              Alumnos
+            </div>
+            <PiStudentBold size={24} />
+          </div>
+          <div>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-xs text-muted-foreground">
+              Todos los alumnos registrados
+            </p>
+          </div>
+        </Card >
+        <Card className="shadow-md">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <div className="text-xl font-medium">
+              Alumnos
+            </div>
+            <PiStudentBold size={24} />
+          </div>
+          <div>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-xs text-muted-foreground">
+              Todos los alumnos registrados
+            </p>
+          </div>
+        </Card>
+      </div>
+      <StudentsTable data={students} />
+    </div >
   )
 }

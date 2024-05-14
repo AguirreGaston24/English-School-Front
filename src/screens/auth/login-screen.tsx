@@ -14,7 +14,7 @@ const rule = createSchemaFieldRule(formSchema);
 type UserFormValue = z.infer<typeof formSchema>;
 
 export const LoginScreen = () => {
-  const { handleLogin, loginErrors } = useAuthContext()
+  const { handleLogin, loginErrors, loading } = useAuthContext()
   const onSubmit = async (data: UserFormValue) => {
     console.log(data)
     handleLogin(data)
@@ -33,12 +33,12 @@ export const LoginScreen = () => {
       <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
         <div className="absolute inset-0 bg-login_image bg-no-repeat bg-cover bg-center" />
         <div className="relative z-20 flex items-center text-lg font-medium">
-          <img className="mr-2 h-10" src="logo-cuatro-carnes.svg" alt="Logo Cuatro Carnes" />
+          <img className="mr-2 h-10" src="logo-cuatro-carnes.svg" alt="Logo del Instituto" />
         </div>
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">
             <p className="text-lg">
-              Cuatro Carnes
+              Carreras de Nivel Superior de Artes Visuales e Idiomas y Cursos de Extensión.
             </p>
             <footer className="text-sm">{new Date().getFullYear()}</footer>
           </blockquote>
@@ -77,7 +77,7 @@ export const LoginScreen = () => {
 
             <Form.Item>
               <Button
-                loading={false}
+                loading={loading}
                 htmlType="submit"
                 size="large"
                 className="w-full mt-2"
