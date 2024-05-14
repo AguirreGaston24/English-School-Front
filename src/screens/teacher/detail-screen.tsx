@@ -1,12 +1,13 @@
+import { Breadcrumb, Button, Card, Divider, Form, Input } from 'antd'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Breadcrumb, Button, Card, Divider, Form, Input, Select } from 'antd'
 import { createSchemaFieldRule } from 'antd-zod'
 import { FaArrowLeft } from 'react-icons/fa6'
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { TeacherSchema } from '../../libs/schemas/teacher'
-import { getTeacher } from '../../api/teacher'
+import { createTeacher, getTeacher, updateTeacher } from '../../api/teacher'
 
 const { useForm } = Form
 const rule = createSchemaFieldRule(TeacherSchema);
@@ -24,31 +25,31 @@ export const TeacherDetails = () => {
 
 
   const onSubmit = async (data: UserFormValue) => {
-    // setLoading(true)
-    // if (id) {
-    //   updateStudent(id, data)
-    //     .then(({ data }) => {
-    //       console.log(data)
-    //       navigate('/')
-    //       toast.success(message)
-    //     })
-    //     .catch((err) => {
-    //       console.log(err)
-    //       toast.error('Opss. Algo salio mal!.')
-    //     })
-    //     .finally(() => setLoading(false))
-    // } else {
-    //   createStudent(data)
-    //     .then(({ data }) => {
-    //       console.log(data)
-    //       navigate('/')
-    //       toast.success(message)
-    //     })
-    //     .catch((err) => {
-    //       console.log(err)
-    //     })
-    //     .finally(() => setLoading(false))
-    // }
+    setLoading(true)
+    if (id) {
+      updateTeacher(id, data)
+        .then(({ data }) => {
+          console.log(data)
+          navigate('/')
+          toast.success(message)
+        })
+        .catch((err) => {
+          console.log(err)
+          toast.error('Opss. Algo salio mal!.')
+        })
+        .finally(() => setLoading(false))
+    } else {
+      createTeacher(data)
+        .then(({ data }) => {
+          console.log(data)
+          navigate('/teachers')
+          toast.success(message)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+        .finally(() => setLoading(false))
+    }
   };
 
 
