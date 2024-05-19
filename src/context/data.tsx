@@ -1,6 +1,6 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { IStudent } from "../interfaces/student";
-import { getAllStudents } from "../api/students";
+import { Pagination, getAllStudents } from "../api/students";
 import { getAllTeachers } from "../api/teacher";
 import { ITeacher } from "../interfaces/teacher";
 import { getAllGroups } from "../api/groups";
@@ -10,6 +10,7 @@ interface DataContextProps {
   teachers: ITeacher[];
   groups: any;
   loading: boolean;
+  getStudents: (p: Pagination) => void
 }
 
 interface DataProviderProps {
@@ -34,9 +35,9 @@ export const DataProvider = ({ children }: DataProviderProps) => {
 
 
 
-  const getStudents = () => {
+  const getStudents = (params?: Pagination) => {
     setLoading(true)
-    getAllStudents()
+    getAllStudents(params)
       .then(({ data }) => {
         setStudents(data.response)
       })
@@ -75,7 +76,8 @@ export const DataProvider = ({ children }: DataProviderProps) => {
       loading,
       students,
       teachers,
-      groups
+      groups,
+      getStudents
     }}>
       {children}
     </Context.Provider>
