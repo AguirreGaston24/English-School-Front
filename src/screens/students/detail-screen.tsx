@@ -1,23 +1,46 @@
-import { z } from "zod";
-import { useEffect, useState } from "react";
-import { Breadcrumb, Button, Card, Divider, Form, Input, Select } from "antd";
+import { Breadcrumb, Button, Card, Divider, Form, Input, Select, Table, TableProps } from "antd";
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { createSchemaFieldRule } from "antd-zod";
-
-import { StudentSchema } from "../../libs/schemas/student";
 import { FaArrowLeft } from "react-icons/fa6";
-import { createStudent, getStudent, updateStudent } from "../../api/students";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { LEVELS } from "../../constant/levels";
+import moment from "moment";
+import { z } from "zod";
+
+import { createStudent, getStudent, updateStudent } from "../../api/students";
+import { StudentSchema } from "../../libs/schemas/student";
+import { DAYS_OF_WEEK } from "../../constant/days_of_week";
 import { useDataContext } from "../../context/data";
+import { LEVELS } from "../../constant/levels";
 
 const rule = createSchemaFieldRule(StudentSchema);
 type UserFormValue = z.infer<typeof StudentSchema>;
 
 const { useForm } = Form;
 
+const columns: TableProps<any>['columns'] = [
+  { title: 'Group', dataIndex: 'group_id', key: 'group_id', },
+  { title: 'Nivel', dataIndex: 'level', key: 'nivel' },
+  { title: 'Teacher', dataIndex: 'teacher', key: 'teacher' },
+  { title: 'Start Date', dataIndex: 'start_date', key: 'start_date', render: (_, record) => moment(record.start_date).format('h:mm A') },
+  { title: 'End Date', dataIndex: 'end_date', key: 'end_date', render: (_, record) => moment(record.end_date).format('h:mm A') },
+  {
+    dataIndex: 'days',
+    key: 'days',
+    width: 100,
+    children: DAYS_OF_WEEK.map(({ value }, i) => ({
+      title: value,
+      dataIndex: value,
+      key: value,
+      width: 20,
+      render: (_, record) => record.days.includes(value) ? 'X' : ''
+    }))
+  },
+];
+
 export const StudentDetails = () => {
-  const {teachers} = useDataContext()
+  const [selectedGroups, setSelectedGroups] = useState<any>([]);
+  const { teachers, groups } = useDataContext()
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const params = useParams()
@@ -31,10 +54,13 @@ export const StudentDetails = () => {
   const onSubmit = async (data: UserFormValue) => {
     setLoading(true)
     if (id) {
-      updateStudent(id, data)
+      updateStudent(id, {
+        ...data,
+        group: selectedGroups
+      })
         .then(({ data }) => {
           console.log(data)
-          navigate('/')
+          navigate('/students')
           toast.success(message)
         })
         .catch((err) => {
@@ -43,10 +69,13 @@ export const StudentDetails = () => {
         })
         .finally(() => setLoading(false))
     } else {
-      createStudent(data)
+      createStudent({
+        ...data,
+        group: selectedGroups
+      })
         .then(({ data }) => {
           console.log(data)
-          navigate('/')
+          navigate('/students')
           toast.success(message)
         })
         .catch((err) => {
@@ -54,6 +83,12 @@ export const StudentDetails = () => {
         })
         .finally(() => setLoading(false))
     }
+  };
+
+  const handleRowSelectionChange = (selectedRowId: any, selectedRows: any[]) => {
+    console.log(`selectedRowId: ${selectedRowId}`, 'selectedGroup: ', selectedRows);
+    const groups = selectedRows.map((g) => g.group_id)
+    setSelectedGroups(groups);
   };
 
 
@@ -72,22 +107,20 @@ export const StudentDetails = () => {
 
   return (
     <div>
-      <Breadcrumb className='section-not-print'>
+      <Breadcrumb className='section-not-print mb-4'>
         <Breadcrumb.Item>Dashboard</Breadcrumb.Item>
         <Breadcrumb.Item>Students</Breadcrumb.Item>
         <Breadcrumb.Item>{id}</Breadcrumb.Item>
       </Breadcrumb>
-      <div className="flex items-center justify-between" id='section-not-print'>
+      <div className="flex items-center justify-between space-y-6 mb-4" id='section-not-print'>
         <Link
           className="flex gap-2 items-center"
-          to='/'
+          to='/students'
         >
           <FaArrowLeft />
           Volver
         </Link>
-        <div className="flex items-center">
-          <Button onClick={() => window.print()}>Imprimir</Button>
-        </div>
+        <Button className="!mt-0" onClick={() => window.print()}>Imprimir</Button>
       </div>
       <Card>
         <Form
@@ -266,6 +299,17 @@ export const StudentDetails = () => {
             </div>
           </div>
           <Divider>Grupos</Divider>
+          <Table
+            size='small'
+            scroll={{ x: 800 }}
+            columns={columns}
+            dataSource={groups}
+            rowKey="_id"
+            rowSelection={{
+              type: 'radio',
+              onChange: handleRowSelectionChange,
+            }}
+          />
           <Button className="col-start-2" loading={loading} htmlType="submit">
             {action}
           </Button>
