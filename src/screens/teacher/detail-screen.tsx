@@ -19,14 +19,16 @@ export const TeacherDetails = () => {
   const params = useParams()
 
   const [form] = useForm()
-  const id = params.id === 'new' ? false : params.id
-  const action = id ? "Guardar Cambios" : "Crear Profe";
-  const message = id ? 'Exito en actualizar el Profe!.' : 'Exito en cargar el Profe!.';
+  const id = params.id === 'new' ? 'new' : params.id!
+  const action = id != 'new' ? "Guardar Cambios" : "Crear Profe";
+  const message = id != 'new' ? 'Exito en actualizar el Profe!.' : 'Exito en cargar el Profe!.';
+
+  console.log(id)
 
 
   const onSubmit = async (data: UserFormValue) => {
     setLoading(true)
-    if (id) {
+    if (id != 'new') {
       updateTeacher(id, data)
         .then(({ data }) => {
           console.log(data)
@@ -54,7 +56,7 @@ export const TeacherDetails = () => {
 
 
   useEffect(() => {
-    if (!id) return
+    if (id != 'new') return
     getTeacher(id)
       .then(({ data }) => {
         form.setFieldsValue(data.response)
@@ -67,12 +69,12 @@ export const TeacherDetails = () => {
 
   return (
     <div>
-      <Breadcrumb className='section-not-print'>
+      <Breadcrumb className='section-not-print mb-4'>
         <Breadcrumb.Item>Dashboard</Breadcrumb.Item>
         <Breadcrumb.Item>Teacher</Breadcrumb.Item>
         <Breadcrumb.Item>{id}</Breadcrumb.Item>
       </Breadcrumb>
-      <div className="flex items-center justify-between" id='section-not-print'>
+      <div className="flex items-center justify-between mb-6" id='section-not-print'>
         <Link
           className="flex gap-2 items-center"
           to='/teachers'
