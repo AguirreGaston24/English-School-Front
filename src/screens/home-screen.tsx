@@ -1,13 +1,7 @@
 import { Card } from 'antd'
 import { PiStudentBold } from "react-icons/pi";
 
-import { StudentsTable } from '../components/table';
-import { useDataContext } from '../context/data';
-
 export const HomeScreen = () => {
-
-  const { students } = useDataContext()
-
   return (
     <div className='space-y-4'>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -68,7 +62,6 @@ export const HomeScreen = () => {
           </div>
         </Card>
       </div>
-      <StudentsTable data={students} />
     </div >
   )
 }
