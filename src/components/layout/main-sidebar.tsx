@@ -60,10 +60,10 @@ export const Sidebar = ({ className }: SidebarProps) => {
             onClick: () => handleNavigate('/groups')
           },
           {
-            key: '/listado-alumnos',
+            key: '/list-students',
             icon: <LuClipboardList size={20} />,
             label: 'Listado Alumnos',
-            onClick: () => handleNavigate('/listado-alumnos')
+            onClick: () => handleNavigate('/list-students')
           },
           {
             key: '/ranking',
