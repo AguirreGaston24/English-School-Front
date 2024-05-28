@@ -25,14 +25,34 @@ const columns: TableProps<any>['columns'] = [
 const ListStudentsScreen = () => {
   return (
     <div>
-      <h1>Lista de Estudiantes</h1>
-      <Form layout="vertical">
-        <Form.Item label="Grupo" name="group" rules={[{ required: true, message: 'Seleccione una letra' }]}>
-          <Select
-            options={alumnos}
-            placeholder="Seleccionar un grupo"
-          />
-        </Form.Item>
+      <h1>Lista de Alumnos</h1>
+      <Form layout="horizontal">
+        <div className='flex justify-around'> 
+          <Form.Item label="Filtrado por barrio" name="group" rules={[{ required: true, message: 'Seleccione una letra' }]}>
+            <Select
+              options={alumnos}
+              placeholder="Seleccionar un grupo"
+            />
+          </Form.Item>
+          <Form.Item label="Filtrado por escuela" name="group" rules={[{ required: true, message: 'Seleccione una letra' }]}>
+            <Select
+              options={alumnos}
+              placeholder="Seleccionar un grupo"
+            />
+          </Form.Item>
+          <Form.Item label="Filtrado por grupo" name="group" rules={[{ required: true, message: 'Seleccione una letra' }]}>
+            <Select
+              options={alumnos}
+              placeholder="Seleccionar un grupo"
+            />
+          </Form.Item>
+          <Form.Item label="Filtrado por profesora" name="group" rules={[{ required: true, message: 'Seleccione una letra' }]}>
+            <Select
+              options={alumnos}
+              placeholder="Seleccionar un grupo"
+            />
+          </Form.Item>
+        </div>
       </Form>
       <Table columns={columns} dataSource={[]} rowKey="Dni" />
     </div>
