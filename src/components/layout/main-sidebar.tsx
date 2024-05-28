@@ -60,10 +60,22 @@ export const Sidebar = ({ className }: SidebarProps) => {
             onClick: () => handleNavigate('/groups')
           },
           {
-            key: '/assists',
-            icon: <FaCircleDollarToSlot size={20} />,
-            label: 'Asistencias',
-            onClick: () => handleNavigate('/assists')
+            key: '/listado-alumnos',
+            icon: <LuClipboardList size={20} />,
+            label: 'Listado Alumnos',
+            onClick: () => handleNavigate('/listado-alumnos')
+          },
+          {
+            key: '/ranking',
+            icon: <FaRankingStar size={20} />,
+            label: 'Ranking por categoria',
+            onClick: () => handleNavigate('/ranking')
+          },
+          {
+            key: '/cumpleaños-alumnos',
+            icon: <FaBirthdayCake size={20} />,
+            label: 'Cumpleaños Alumnos',
+            onClick: () => handleNavigate('/cumpleaños-alumnos')
           },
           {
             key: '/pagos-profesores',
@@ -77,26 +89,8 @@ export const Sidebar = ({ className }: SidebarProps) => {
             label: 'Recibos Alumnos',
             onClick: () => handleNavigate('/recibos-alumnos')
           },
-          {
-            key: '/listado-alumnos',
-            icon: <LuClipboardList size={20} />,
-            label: 'Listado Alumnos',
-            onClick: () => handleNavigate('/listado-alumnos')
-          },
-          {
-            key: '/ranking',
-            icon: <FaRankingStar size={20} />,
-            label: 'Ranking',
-            onClick: () => handleNavigate('/ranking')
-          },
-          {
-            key: '/cumpleaños-alumnos',
-            icon: <FaBirthdayCake size={20} />,
-            label: 'Cumpleaños Alumnos',
-            onClick: () => handleNavigate('/cumpleaños-alumnos')
-          },
         ]}
-      />
+        />
     </nav>
   )
 }
