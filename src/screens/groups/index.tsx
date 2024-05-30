@@ -1,6 +1,6 @@
 import { Button, Card, Checkbox, Divider, Form, Select, Table, TableProps, TimePicker } from 'antd'
 import { createSchemaFieldRule } from 'antd-zod'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import moment from 'moment'
 import { z } from 'zod'
@@ -11,6 +11,7 @@ import { groupSchema } from '../../libs/schemas/groups'
 import { createGroup } from '../../api/groups'
 import { LEVELS } from '../../constant/levels'
 import { GROUPS } from '../../constant/groups'
+
 
 const { useForm } = Form;
 const rule = createSchemaFieldRule(groupSchema);
@@ -36,11 +37,25 @@ const columns: TableProps<any>['columns'] = [
   },
 ];
 
+
 export const GroupsScreen = () => {
   const { teachers, groups } = useDataContext()
+  const [selectedTeachers, setSelectedTeachers] = useState<string[]>([]);
   const [loading, setLoading] = useState(false)
   const [form] = useForm()
+  const [selectAll, setSelectAll] = useState<boolean>(false);
+  const { Option } = Select;
 
+  useEffect(() => {
+    if (selectAll) {
+      // Si el checkbox "Todos" está marcado, selecciona todos los profesores
+      const allTeachersIds = teachers.map(teacher => teacher._id);
+      setSelectedTeachers(allTeachersIds);
+    } else {
+      // Si el checkbox "Todos" no está marcado, vacía la selección de profesores
+      setSelectedTeachers([]);
+    }
+  }, [selectAll, teachers]);
 
   const onSubmit = (data: UserFormValue) => {
     setLoading(true)
@@ -58,6 +73,23 @@ export const GroupsScreen = () => {
       .catch((error) => console.log(error))
       .finally(() => setLoading(false))
   }
+
+
+
+
+  const handleSelectAll = () => {
+    setSelectAll(!selectAll);
+    const allTeachersIds = teachers.map(teacher => teacher._id);
+    setSelectedTeachers(selectAll ? allTeachersIds : []);
+    // Aquí podrías realizar alguna acción con la lista de profesores
+    // Por ejemplo, si tienes una función para manejar la selección de todos los profesores:
+    // handleSelectAllTeachers(selectAll);
+  };
+
+  const handleTeacherSelectChange = (selectedValues : any) => {
+    setSelectedTeachers(selectedValues);
+  };
+
 
   return (
     <div className='grid grid-cols-1 gap-y-6 lg:gap-x-6 lg:grid-cols-3 '>
@@ -108,6 +140,28 @@ export const GroupsScreen = () => {
         </Card>
       </div>
       <div className='col-span-2'>
+        <h1 className="text-2xl text-center mb-4">Seleccionar filtro</h1>
+        <div className="flex justify-center space-x-4 items-center mb-4">
+          <Checkbox
+            checked={selectAll}
+            onChange={handleSelectAll}
+            style={{ borderRadius: '9999px' }}>Todos</Checkbox>
+          <Checkbox style={{ borderRadius: '9999px' }}>Nivel</Checkbox>
+          <Checkbox style={{ borderRadius: '9999px' }}>Profesora</Checkbox>
+          <Select
+            mode="multiple"
+            style={{ width: '100%' }}
+            placeholder="Elegir uno"
+            value={selectedTeachers}
+            onChange={handleTeacherSelectChange}
+          >
+            {teachers.map(teacher => (
+              <Option key={teacher._id} value={teacher._id}>
+                {teacher.firstname} {teacher.lastname}
+              </Option>
+            ))}
+          </Select>
+        </div>
         <Table
           size='small'
           scroll={{ x: 800 }}
