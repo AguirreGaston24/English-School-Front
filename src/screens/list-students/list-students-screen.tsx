@@ -12,30 +12,31 @@ const ListStudentsScreen = () => {
     const values = form.getFieldsValue();
     let filtered = students;
 
-    if (values.district) {
-      filtered = filtered.filter(student => student.district === values.district);
+    if (values.district && values.district !== 'none') {
+      filtered = students.filter(student => student.district === values.district);
+    } else if (values.school && values.school !== 'none') {
+      filtered = students.filter(student => student.school === values.school);
+    } else if (values.group && values.group !== 'none') {
+      filtered = students.filter(student => student.group === values.group);
+    } else if (values.teacher && values.teacher !== 'none') {
+      filtered = students.filter(student => student.teacher === values.teacher);
     }
-    if (values.school) {
-      filtered = filtered.filter(student => student.school === values.school);
-    }
-    if (values.group) {
-      filtered = filtered.filter(student => student.group === values.group);
-    }
-    if (values.teacher) {
-      filtered = filtered.filter(student => student.teacher === values.teacher);
-    }
+
 
     setFilteredStudents(filtered);
   };
 
-  const districts = Array.from(new Set(students.map(student => student.district)))
-    .map(district => ({ value: district, label: district }));
-  const schools = Array.from(new Set(students.map(student => student.school)))
-    .map(school => ({ value: school, label: school }));
-  const groups = Array.from(new Set(students.map(student => student.group)))
-    .map(group => ({ value: group, label: group }));
-  const teachers = Array.from(new Set(students.map(student => student.teacher)))
-    .map(teacher => ({ value: teacher, label: teacher }));
+
+
+  const school = [{ value: 'none', label: 'Ninguno' }, ...Array.from(new Set(students.map(student => student.school)))
+    .map(school => ({ value: school, label: school }))];
+  const group = [{ value: 'none', label: 'Ninguno' }, ...Array.from(new Set(students.map(student => student.group)))
+    .map(group => ({ value: group, label: group }))];
+  const teacher = [{ value: 'none', label: 'Ninguno' }, ...Array.from(new Set(students.map(student => student.teacher)))
+    .map(teacher => ({ value: teacher, label: teacher }))];
+  const district = [{ value: 'none', label: 'Ninguno' }, ...Array.from(new Set(students.map(student => student.district)))
+    .map(district => ({ value: district, label: district }))];
+ 
 
   const columns: TableProps<any>['columns'] = [
     { title: 'Alumno', dataIndex: 'firstname', key: 'firstname' },
@@ -44,42 +45,54 @@ const ListStudentsScreen = () => {
     { title: 'Barrio', dataIndex: 'district', key: 'district' },
     { title: 'Escuela', dataIndex: 'school', key: 'school' },
     { title: 'Grupo', dataIndex: 'group', key: 'group' },
-    { title: 'Grado', dataIndex: 'grade', key: 'grade' },
-    { title: 'Profesora', dataIndex: 'teachers', key: 'teacher' },
+    { title: 'Profesora', dataIndex: 'teacher', key: 'teacher' },
   ];
 
   return (
-    <div>
-      <h1>Lista de Alumnos</h1>
+    <div className=' mx-auto px-4'>
+      <h1 className='text-2xl font-bold mb-4'>Total de Alumnos {students.length}</h1>
       <Form form={form} layout="horizontal" onValuesChange={handleFilterChange}>
-        <div className='flex justify-around'>
-          <Form.Item label="Filtrado por barrio" name="district">
+        <div className='flex justify-around  flex-wrap gap-4' >
+          <Form.Item className='w-full sm:w-auto' label="Filtrado por barrio" name="district">
             <Select
-              options={districts}
+              className="w-full sm:w-64"
+              options={district}
               placeholder="Seleccionar un barrio"
+              defaultValue="none"
             />
           </Form.Item>
-          <Form.Item label="Filtrado por escuela" name="school">
+          <Form.Item className='w-full sm:w-auto' label="Filtrado por escuela" name="school">
             <Select
-              options={schools}
+              className="w-full sm:w-64"
+              options={school}
               placeholder="Seleccionar una escuela"
+              defaultValue="none"
             />
           </Form.Item>
-          <Form.Item label="Filtrado por grupo" name="group">
+          <Form.Item className='w-full sm:w-auto' label="Filtrado por grupo" name="group">
             <Select
-              options={groups}
+              className="w-full sm:w-64"
+              options={group}
               placeholder="Seleccionar un grupo"
+              defaultValue="none"
             />
           </Form.Item>
-          <Form.Item label="Filtrado por profesora" name="teacher">
+          <Form.Item className='w-full sm:w-auto' label="Filtrado por profesora" name="teacher">
             <Select
-              options={teachers}
+              className="w-full sm:w-64"
+              options={teacher}
               placeholder="Seleccionar una profesora"
+              defaultValue="none"
             />
           </Form.Item>
+         
+        
+        
         </div>
       </Form>
-      <Table columns={columns} dataSource={filteredStudents} rowKey="dni" />
+      <div>
+        <Table scroll={{ x: 800 }} className="mt-4" columns={columns} dataSource={filteredStudents} rowKey="dni" />
+      </div>
     </div>
   );
 };
