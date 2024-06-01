@@ -2,6 +2,7 @@ import { ReactNode, createContext, useContext, useEffect, useState } from 'react
 
 import { Login, Register, UserLogin, UserRegister, Verify } from '../api/auth';
 import { IUser } from '../interfaces/user';
+import { useNavigate } from 'react-router-dom';
 
 export type User = Pick<IUser, 'email' | 'username'>;
 
@@ -10,6 +11,7 @@ interface AuthContextProps {
   loading: boolean;
   uiLoading: boolean;
   loginErrors: any;
+  registerErrors: any;
   handleLogin: (user: UserLogin) => void;
   handleRegister: (user: UserRegister) => void;
   handleLogout: () => void;
@@ -33,8 +35,11 @@ export const useAuthContext = () => {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | undefined | null>(undefined)
   const [loginErrors, setLoginErrors] = useState<any>(undefined)
+  const [registerErrors, setRegisterErrors] = useState<any>(undefined);
   const [uiLoading, setUiLoading] = useState(true)
   const [loading, setLoading] = useState(false)
+
+  const navigate = useNavigate();
 
   const token = localStorage.getItem('token')
 
@@ -63,15 +68,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   const handleRegister = (user: UserRegister) => {
-    setUiLoading(true)
+    setUiLoading(true);
     Register(user)
       .then(({ data }) => {
-        setUser(data)
-        localStorage.setItem('token', data.token)
+        setUser(data);
+        localStorage.setItem('token', data.token);
+        navigate('/login'); // Redirige a la pantalla de login después del registro exitoso
       })
-      .catch((error) => console.log(error))
-      .finally(() => setUiLoading(false))
-  }
+      .catch((error) => {
+        if (error.response) {
+          const { data } = error.response;
+          const message = data.message;
+          const errorsArray = Array.isArray(message) ? message : [message];
+          setRegisterErrors(errorsArray);
+          setTimeout(() => {
+            setRegisterErrors([]);
+          }, 3000);
+        }
+      })
+      .finally(() => setUiLoading(false));
+  };
 
 
   const handleLogout = () => {
@@ -107,6 +123,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     loading,
     uiLoading,
     loginErrors,
+    registerErrors,
     handleLogin,
     handleRegister,
     handleLogout,
