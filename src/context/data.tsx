@@ -47,7 +47,7 @@ export const DataProvider = ({ children }: DataProviderProps) => {
 
   const getTeachers = () => {
     setLoading(true)
-    getAllTeachers()
+    getAllTeachers({})
       .then(({ data }) => {
         setTeachers(data.response)
       })
