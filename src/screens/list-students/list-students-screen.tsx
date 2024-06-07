@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
 import { Select, Form, Table, TableProps } from 'antd';
-import { useDataContext } from '../../context/data';
+import { useState } from 'react';
+
 import { IStudent } from '../../interfaces/student';
+import { useStudent } from '../../context/student';
 
 const ListStudentsScreen = () => {
-  const { students } = useDataContext();
+  const { students } = useStudent();
   const [filteredStudents, setFilteredStudents] = useState<IStudent[]>(students);
   const [form] = Form.useForm();
 

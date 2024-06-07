@@ -2,12 +2,13 @@ import { TableProps, Space, Tooltip, Button, Table } from 'antd';
 import { LuMessageCircle } from 'react-icons/lu';
 import { useNavigate } from 'react-router-dom';
 import { FaPencil } from 'react-icons/fa6';
-import { useDataContext } from '../../context/data';
 import moment from 'moment';
+
 import { ITeacher } from '../../interfaces/teacher';
+import { useTeacherContext } from '../../context/teacher';
 
 export const TeacherScreen = () => {
-  const { loading, teachers } = useDataContext()
+  const { teachers, loading } = useTeacherContext()
   const navigate = useNavigate()
 
   const columns: TableProps<ITeacher>['columns'] = [
@@ -51,6 +52,7 @@ export const TeacherScreen = () => {
       )
     },
   ];
+
 
   return (
     <div>
