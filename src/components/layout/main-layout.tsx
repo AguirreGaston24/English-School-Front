@@ -2,6 +2,7 @@ import { Drawer, Layout } from "antd"
 
 import { Header, Sidebar } from "./"
 import { useUiContext } from "../../context/ui"
+import { TeacherProvider } from "../../context/teacher"
 
 
 interface MainLayoutProps {
@@ -14,7 +15,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const { openMenu, setOpenMenu } = useUiContext()
 
   return (
-    <>
+    <TeacherProvider>
       <Header />
       <Drawer
         classNames={{ body: '!p-0' }}
@@ -31,6 +32,6 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           {children}
         </Content>
       </div>
-    </>
+    </TeacherProvider>
   )
 }

@@ -72,10 +72,10 @@ export const Sidebar = ({ className }: SidebarProps) => {
             onClick: () => handleNavigate('/ranking')
           },
           {
-            key: '/cumpleaños-alumnos',
+            key: '/birthday',
             icon: <FaBirthdayCake size={20} />,
             label: 'Cumpleaños Alumnos',
-            onClick: () => handleNavigate('/cumpleaños-alumnos')
+            onClick: () => handleNavigate('/birthday')
           },
           {
             key: '/pagos-profesores',
