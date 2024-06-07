@@ -10,8 +10,10 @@ import { z } from "zod";
 import { createStudent, getStudent, updateStudent } from "../../api/students";
 import { StudentSchema } from "../../libs/schemas/student";
 import { DAYS_OF_WEEK } from "../../constant/days_of_week";
-import { useDataContext } from "../../context/data";
 import { LEVELS } from "../../constant/levels";
+import { ADDRESSES } from "../../constant/address";
+import { SCHOOl } from "../../constant/schools";
+import { useTeacherContext } from "../../context/teacher";
 
 const rule = createSchemaFieldRule(StudentSchema);
 type UserFormValue = z.infer<typeof StudentSchema>;
@@ -40,7 +42,7 @@ const columns: TableProps<any>['columns'] = [
 
 export const StudentDetails = () => {
   const [selectedGroups, setSelectedGroups] = useState<any>([]);
-  const { teachers, groups } = useDataContext()
+  const { teachers } = useTeacherContext()
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const params = useParams()
@@ -129,20 +131,20 @@ export const StudentDetails = () => {
           requiredMark={false}
           onFinish={onSubmit}
         >
-          <Divider orientation="left">Student Information</Divider>
+          <Divider orientation="left">Información del estudiante</Divider>
 
           <div className="md:grid md:grid-cols-3 gap-8">
             <div>
 
               <Form.Item
-                label="First Name"
+                label="Nombre"
                 name="firstname"
                 rules={[rule]}
               >
-                <Input placeholder="firstname" />
+                <Input placeholder="Ingrese el nombre" />
               </Form.Item>
               <Form.Item
-                label="Email"
+                label="Correo"
                 name="email"
                 rules={[rule]}
               >
@@ -150,31 +152,29 @@ export const StudentDetails = () => {
               </Form.Item>
 
               <Form.Item
-                label="Address"
+                label="Direccíon"
                 name="address"
                 rules={[rule]}
               >
                 <Input
-                  placeholder="Address"
+                  placeholder="Ingrese una direccíon"
                 />
               </Form.Item>
 
               <Form.Item
-                label="District"
+                label="Barrio"
                 name="district"
                 rules={[rule]}
               >
-                <Input
-                  placeholder="Distric"
-                />
+                <Select placeholder='Seleccione el barrio' options={ADDRESSES} />
               </Form.Item>
 
               <Form.Item
-                label="Teacher"
+                label="Profesor/a"
                 name="teacher"
                 rules={[rule]}
               >
-                <Select options={teachers.map((t) => ({ label: `${t.firstname} ${t.lastname}`, value: `${t.firstname} ${t.lastname}` }))} />
+                <Select placeholder='Selecciones un profesor/a' options={teachers.map((t) => ({ label: `${t.firstname} ${t.lastname}`, value: `${t.firstname} ${t.lastname}` }))} />
               </Form.Item>
 
             </div>
@@ -182,7 +182,7 @@ export const StudentDetails = () => {
 
             <div>
               <Form.Item
-                label="Lastname"
+                label="Apellido"
                 name="lastname"
                 rules={[rule]}
               >
@@ -190,7 +190,7 @@ export const StudentDetails = () => {
               </Form.Item>
 
               <Form.Item
-                label="Phone"
+                label="Celular"
                 name="phone"
                 rules={[rule]}
               >
@@ -199,7 +199,7 @@ export const StudentDetails = () => {
 
 
               <Form.Item
-                label="Country"
+                label="Localidad"
                 name="country"
                 rules={[rule]}
               >
@@ -207,7 +207,7 @@ export const StudentDetails = () => {
               </Form.Item>
 
               <Form.Item
-                label="City"
+                label="Ciudad"
                 name="city"
                 rules={[rule]}
               >
@@ -227,7 +227,7 @@ export const StudentDetails = () => {
               </Form.Item>
 
               <Form.Item
-                label='Birthdate'
+                label='Fecha de cumpleaños'
                 name='birth_date'
                 rules={[rule]}
               >
@@ -235,15 +235,15 @@ export const StudentDetails = () => {
               </Form.Item>
 
               <Form.Item
-                label='School'
+                label='Escuela'
                 name='school'
                 rules={[rule]}
               >
-                <Input type="text" />
+                <Select placeholder='Seleccione la escuela' options={SCHOOl} />
               </Form.Item>
 
               <Form.Item
-                label='Level'
+                label='Nivel'
                 name='level'
                 rules={[rule]}
               >
@@ -253,7 +253,7 @@ export const StudentDetails = () => {
             </div>
 
           </div>
-          <Divider orientation="left">Tutor Information</Divider>
+          <Divider orientation="left">Información del tutor</Divider>
           <div className="md:grid md:grid-cols-3 gap-8">
             <div>
               <Form.Item
@@ -261,49 +261,50 @@ export const StudentDetails = () => {
                 name="tutor"
                 rules={[rule]}
               >
-                <Input placeholder="tutor" />
+                <Input placeholder="Ingrese el nombre del tutor" />
               </Form.Item>
 
               <Form.Item
-                label="Address"
+                label="Direccíon del tutor"
                 name="tutor_address"
                 rules={[rule]}
               >
-                <Input placeholder="Address" />
+                <Input placeholder="Ingrese la direccíon del tutor" />
               </Form.Item>
             </div>
             <div>
               <Form.Item
-                label="tutor_occupation"
-                name="tutor_occupation"
+                label="Trabajo"
+                name="Ingrese donde trabaja"
                 rules={[rule]}
               >
-                <Input placeholder="tutor_occupation" />
+                <Input placeholder="Ingrese donde trabaja" />
               </Form.Item>
               <Form.Item
-                label="tutor_district"
+                label="Localidad"
                 name="tutor_district"
                 rules={[rule]}
               >
-                <Input placeholder="tutor_district" />
+                <Input placeholder="Ingrese la localidad" />
+
               </Form.Item>
             </div>
             <div>
               <Form.Item
-                label="tutor_phone"
+                label="Teléfono"
                 name="tutor_phone"
                 rules={[rule]}
               >
-                <Input placeholder="tutor_phone" />
+                <Input placeholder="Ingrese el numero de teléfono" />
               </Form.Item>
             </div>
           </div>
-          <Divider>Grupos</Divider>
+          <Divider>Seleccion de grupo</Divider>
           <Table
             size='small'
             scroll={{ x: 800 }}
             columns={columns}
-            dataSource={groups}
+            dataSource={[]}
             rowKey="_id"
             rowSelection={{
               type: 'radio',
