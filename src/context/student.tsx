@@ -1,7 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react"
+import { useSearchParams } from "react-router-dom"
 
+import { Pagination } from "../interfaces/pagination"
+import { getAllStudents } from "../api/students"
 import { IStudent } from "../interfaces/student"
-import { Pagination, getAllStudents } from "../api/students"
 
 interface StudentProviderProps {
   children: JSX.Element | JSX.Element[]
@@ -14,9 +16,7 @@ interface StundentContextProps {
   limit: number
   total: number
   fetchData: (query: Pagination) => void
-  onPageChange: (page: number) => void,
-  onPageSizeChange: (current: any, size: number) => void
-  handleFilterChange: (filterName: string, value: string) => void
+  handleFilterChange: (term?: [string, string][]) => void
 }
 
 const Context = createContext<StundentContextProps | undefined>(undefined)
@@ -33,39 +33,32 @@ export const StudentProvider = ({ children }: StudentProviderProps) => {
   const [limit, setLimit] = useState(10)
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const onPageChange = (page: number) => {
-    setPage(page);
-  };
+  useEffect(() => {
+    handleFilterChange()
+  }, [])
 
-  const onPageSizeChange = (current: any, size: any) => {
-    setLimit(size);
-  };
+  const handleFilterChange = (q?: [string, string][]) => {
+    console.log(q)
+    setSearchParams((params) => {
+      q?.forEach(([term, value]) => {
+        if (value == undefined || value === "") {
+          return params.delete(term)
+        }
+        params.set(term, value)
+      })
+      return params
+    })
 
-
-  const handleFilterChange = (filterName: string, value: string) => {
-    const queryParams = new URLSearchParams('');
-
-    // Conserva la paginación existente
-    const page = queryParams.get('page') || '1';
-    const limit = queryParams.get('limit') || '10';
-    if (page) queryParams.set('page', page);
-    if (limit) queryParams.set('limit', limit);
-
-    // Establece el nuevo filtro
-    queryParams.set(filterName, value);
-
-    // Construye la URL con la nueva consulta
-    const queryString = queryParams.toString();
-
-    // Actualiza la URL y recupera los estudiantes con la paginación existente
     fetchData({
-      page: page ? parseInt(page) : 1,
-      limit: limit ? parseInt(limit) : 10,
-      term: queryParams.get('term') || '',
-      district: queryParams.get('district') || '',
-      group: queryParams.get('group') || '',
-      // Agrega más propiedades de filtro aquí según sea necesario
+      page: Number(searchParams.get('page') || 1),
+      limit: Number(searchParams.get('limit') || 10),
+      term: searchParams.get('term') || '',
+      school: searchParams.get('school') || '',
+      teacher: searchParams.get('teacher') || '',
+      district: searchParams.get('district') || '',
+      group: searchParams.get('group') || '',
     });
   };
 
@@ -84,10 +77,6 @@ export const StudentProvider = ({ children }: StudentProviderProps) => {
       .finally(() => setLoading(false))
   }
 
-  useEffect(() => {
-    fetchData({ limit, page, })
-  }, [limit, page])
-
   const values: StundentContextProps = {
     students,
     limit,
@@ -95,8 +84,6 @@ export const StudentProvider = ({ children }: StudentProviderProps) => {
     page,
     total,
     fetchData,
-    onPageChange,
-    onPageSizeChange,
     handleFilterChange,
   }
 

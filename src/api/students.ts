@@ -1,13 +1,11 @@
 import instance from "."
+import { Pagination } from "./teacher";
 import { IStudent } from "../interfaces/student"
 
-export interface Pagination {
-  term?: string
-}
 
 export const getAllStudents = (params?: Pagination) => {
-  const p = new URLSearchParams(params as any)
-  return instance.get(`/students?${p.toString()}`)
+  const queryParams = new URLSearchParams(params as string | string[][]);
+  return instance.get(`/students?${queryParams.toString()}`)
 }
 
 export const getStudent = (id: string) => {

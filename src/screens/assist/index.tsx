@@ -1,19 +1,21 @@
-import { Avatar, Card, Collapse, CollapseProps, Divider, List, Select, Skeleton, Tag } from 'antd'
+import { Avatar, Card, CollapseProps, Divider, List, Select, Skeleton, Tag } from 'antd'
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { MdMoreHoriz } from 'react-icons/md';
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner';
+import moment from 'moment';
 // @ts-ignore
 
 import BarcodeReader from 'react-barcode-reader'
 
 import { createassists, getAllassists } from '../../api/assists';
-import { useDataContext } from '../../context/data';
-import { toast } from 'sonner';
-import { MdMoreHoriz, MdMoreVert } from 'react-icons/md';
+import { useTeacherContext } from '../../context/teacher';
 import { IStudent } from '../../interfaces/student';
-import moment from 'moment';
+import { useStudent } from '../../context/student';
 
 export const AssistsScreen = () => {
-  const { students, teachers } = useDataContext()
+  const { teachers } = useTeacherContext()
+  const { students } = useStudent()
   const [loading, setLoading] = useState(false);
   const [assists, setAssists] = useState<any>([]);
 

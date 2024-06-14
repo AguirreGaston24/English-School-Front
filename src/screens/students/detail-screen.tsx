@@ -14,6 +14,7 @@ import { LEVELS } from "../../constant/levels";
 import { ADDRESSES } from "../../constant/address";
 import { SCHOOl } from "../../constant/schools";
 import { useTeacherContext } from "../../context/teacher";
+import { useStudent } from "../../context/student";
 
 const rule = createSchemaFieldRule(StudentSchema);
 type UserFormValue = z.infer<typeof StudentSchema>;
@@ -43,6 +44,7 @@ const columns: TableProps<any>['columns'] = [
 export const StudentDetails = () => {
   const [selectedGroups, setSelectedGroups] = useState<any>([]);
   const { teachers } = useTeacherContext()
+  const { handleFilterChange } = useStudent()
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const params = useParams()
@@ -56,10 +58,7 @@ export const StudentDetails = () => {
   const onSubmit = async (data: UserFormValue) => {
     setLoading(true)
     if (id) {
-      updateStudent(id, {
-        ...data,
-        group: selectedGroups
-      })
+      updateStudent(id, data)
         .then(({ data }) => {
           console.log(data)
           navigate('/students')
@@ -78,6 +77,7 @@ export const StudentDetails = () => {
         .then(({ data }) => {
           console.log(data)
           navigate('/students')
+          handleFilterChange()
           toast.success(message)
         })
         .catch((err) => {

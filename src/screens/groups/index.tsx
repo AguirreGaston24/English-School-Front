@@ -5,8 +5,8 @@ import { toast } from 'sonner';
 import moment from 'moment';
 import { z } from 'zod';
 
-import { useDataContext } from '../../context/data';
 import { DAYS_OF_WEEK } from '../../constant/days_of_week';
+import { useTeacherContext } from '../../context/teacher';
 import { groupSchema } from '../../libs/schemas/groups';
 import { createGroup } from '../../api/groups';
 import { LEVELS } from '../../constant/levels';
@@ -37,28 +37,15 @@ const columns: TableProps<any>['columns'] = [
 ];
 
 export const GroupsScreen = () => {
-  const { teachers, groups = [] } = useDataContext();  // Asignar un valor predeterminado a groups
+  const { teachers } = useTeacherContext();
   const [selectedTeachers, setSelectedTeachers] = useState<string[]>([]);
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [form] = useForm();
   const [filterType, setFilterType] = useState<string>('none');
-  const [filteredData, setFilteredData] = useState(groups);
+  const [filteredData, setFilteredData] = useState([]);
   const { Option } = Select;
 
-  useEffect(() => {
-    let filtered = groups;
-
-    if (filterType === 'all') {
-      setFilteredData(groups);
-    } else if (filterType === 'level' && selectedLevels.length > 0) {
-      filtered = groups.filter((group: any) => selectedLevels.includes(group.level));
-    } else if (filterType === 'teacher' && selectedTeachers.length > 0) {
-      filtered = groups.filter((group: any) => selectedTeachers.includes(group.teacher));
-    }
-
-    setFilteredData(filtered);
-  }, [filterType, selectedTeachers, selectedLevels, groups]);
 
   const onSubmit = (data: UserFormValue) => {
     setLoading(true);

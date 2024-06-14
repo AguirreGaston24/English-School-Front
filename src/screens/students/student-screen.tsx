@@ -1,5 +1,5 @@
 import { TableProps, Space, Tooltip, Button, Table, Input, Modal, Select } from "antd"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { MdDelete } from "react-icons/md";
 import { FaPencil } from "react-icons/fa6"
 import { toast } from "sonner";
@@ -12,12 +12,14 @@ import { SCHOOl } from "../../constant/schools";
 import { useStudent } from "../../context/student";
 import { deleteStudent } from "../../api/students";
 import { useTeacherContext } from "../../context/teacher";
+import TeacherSelect from "../../components/teacher-select";
 
 const { Search } = Input
 const { confirm } = Modal;
 
 export const StudentScreen = () => {
-  const { students, loading, limit, page, total, fetchData, handleFilterChange, onPageChange, onPageSizeChange } = useStudent()
+  const { students, loading, limit, page, total, fetchData, handleFilterChange } = useStudent()
+  const [searchParams, setSearchParams] = useSearchParams();
   const { teachers } = useTeacherContext()
   const navigate = useNavigate();
 
@@ -59,11 +61,11 @@ export const StudentScreen = () => {
     { title: 'Direccion', dataIndex: 'address', key: 'address', ellipsis: true },
     { title: 'Barrio', dataIndex: 'district', key: 'district', width: 150, },
     { title: 'DNI', dataIndex: 'dni', key: 'dni', width: 150, },
-    { title: 'Escuela', dataIndex: 'school', key: 'school' },
-    { title: 'Grupo', dataIndex: 'group', key: 'group' },
-    { title: 'Profesora', dataIndex: 'teacher', key: 'teacher', width: 150 },
-    { title: 'Cumpleaño', dataIndex: 'birth_date', key: 'birth_date', width: 150, render: (_, record) => moment(record.birth_date).format('DD-MM-YYYY') },
-    { title: 'Tutor a cargo', dataIndex: 'tutor_occupation', key: 'tutor_occupation', width: 200 },
+    { title: 'Escuela', dataIndex: 'school', key: 'school', width: 200, ellipsis: true },
+    { title: 'Grupo', dataIndex: 'group', key: 'group', width: 80, align: 'center' },
+    { title: 'Profesora', dataIndex: 'teacher', key: 'teacher', width: 250 },
+    { title: 'Cumpleaño', dataIndex: 'birth_date', key: 'birth_date', align: 'center', width: 100, render: (_, record) => moment(record.birth_date).format('DD-MM-YYYY') },
+    { title: 'Tutor a cargo', dataIndex: 'tutor_occupation', key: 'tutor_occupation', width: 200, ellipsis: true },
     {
       align: 'center',
       title: 'Acciones',
@@ -90,14 +92,12 @@ export const StudentScreen = () => {
     <div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 py-2 mb-5">
         <Button onClick={() => navigate('/students/new')}>Nuevo alumno</Button>
-        <Search allowClear name="search" placeholder="Buscar..." onSearch={(value) => fetchData({ term: value })} />
-        <Select allowClear placeholder='Filtro por barrio' options={ADDRESSES} onChange={(value) => handleFilterChange('district', value)} />
-        <Select allowClear placeholder='Filtro por escuela' options={SCHOOl} onChange={(value) => handleFilterChange('school', value)} />
-        <Select allowClear placeholder='Filtro por grupo' options={GROUPS} onChange={(value) => handleFilterChange('group', value)} />
-        <Select allowClear placeholder='Filtro por profesora'
-          options={teachers.map(({ firstname, lastname }) => ({ label: `${firstname} ${lastname}`, value: `${firstname} ${lastname}` }))}
-          onChange={(value) => handleFilterChange('teacher', value)}
-        />
+        <Search
+          allowClear name="search" placeholder="Buscar..." onSearch={(value) => handleFilterChange([["term", value]])} defaultValue={searchParams.get("term") || ""} />
+        <Select allowClear placeholder='Filtro por barrio' options={ADDRESSES} onChange={(value) => handleFilterChange([['district', value]])} />
+        <Select allowClear placeholder='Filtro por escuela' options={SCHOOl} onChange={(value) => handleFilterChange([['school', value]])} />
+        <Select allowClear placeholder='Filtro por grupo' options={GROUPS} onChange={(value) => handleFilterChange([['group', value]])} />
+        <TeacherSelect />
       </div>
       <Table
         size="small"
@@ -105,6 +105,7 @@ export const StudentScreen = () => {
         columns={columns}
         loading={loading}
         scroll={{ x: 2000 }}
+        rowKey="_id"
         pagination={{
           className: 'section-not-print px-4',
           rootClassName: '',
@@ -114,8 +115,7 @@ export const StudentScreen = () => {
           total,
           current: page,
           pageSize: limit,
-          onChange: onPageChange,
-          onShowSizeChange: onPageSizeChange,
+          onChange: (page, pageSize) => handleFilterChange([["page", page.toString()], ["limit", pageSize.toString()]]),
           showSizeChanger: true
         }}
       />

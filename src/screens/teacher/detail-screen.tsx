@@ -20,15 +20,15 @@ export const TeacherDetails = () => {
 
   const [form] = useForm()
   const id = params.id === 'new' ? 'new' : params.id!
-  const action = id != 'new' ? "Guardar Cambios" : "Crear Profe";
-  const message = id != 'new' ? 'Exito en actualizar el Profe!.' : 'Exito en cargar el Profe!.';
+  const action = id !== 'new' ? "Guardar Cambios" : "Crear Profe";
+  const message = id !== 'new' ? 'Exito en actualizar el Profe!.' : 'Exito en cargar el Profe!.';
 
   console.log(id)
 
 
   const onSubmit = async (data: UserFormValue) => {
     setLoading(true)
-    if (id != 'new') {
+    if (id !== 'new') {
       updateTeacher(id, data)
         .then(({ data }) => {
           console.log(data)
@@ -56,7 +56,7 @@ export const TeacherDetails = () => {
 
 
   useEffect(() => {
-    if (id != 'new') return
+    if (id !== 'new') return
     getTeacher(id)
       .then(({ data }) => {
         form.setFieldsValue(data.response)
@@ -65,7 +65,7 @@ export const TeacherDetails = () => {
       .catch((error) => console.log(error))
       .finally(() => { })
 
-  }, [id])
+  }, [id, form])
 
   return (
     <div>
