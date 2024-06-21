@@ -31,9 +31,9 @@ export const LoginScreen = () => {
         Login
       </a>
       <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
-        <div className="absolute inset-0 bg-login_image bg-no-repeat bg-cover bg-center" />
+        <div className="absolute inset-0 bg-login_image bg-no-repeat bg-cover bg-center bg-login-pattern" />
         <div className="relative z-20 flex items-center text-lg font-medium">
-          <img className="mr-2 h-10" src="logo-cuatro-carnes.svg" alt="Logo del Instituto" />
+          <img className="mr-2 h-10" src="/assets/placeholder.jpg" alt="Logo del Instituto" />
         </div>
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">

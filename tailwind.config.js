@@ -41,6 +41,9 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      backgroundImage: {
+        'login-pattern': "url('https://cdn.pixabay.com/photo/2022/01/22/16/54/book-6957870_1280.jpg')",
+      }
     },
   },
   plugins: [],
