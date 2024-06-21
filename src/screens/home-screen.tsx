@@ -45,6 +45,16 @@ export const HomeScreen = () => {
     datasets: [],
   });
 
+  const [teacher_pie, setTeacherPie] = useState<any>({
+    labels: [],
+    datasets: [{
+      label: 'Alumnos por Profesor y Grupo',
+      data: [],
+      backgroundColor: [],
+      hoverOffset: 4
+    }]
+  });
+
 
   const getBirthdayMessage = (daysUntilBirthday: number) => {
     if (daysUntilBirthday === 0) {
@@ -71,9 +81,23 @@ export const HomeScreen = () => {
     instance.get('/stats')
       .then(({ data }) => {
         setData(data);
+        console.log(data)
         const districts = data.districs
+        const students_in_teacher = data.students_in_teacher
         const labels = districts.map((district: any) => district._id);
         const counts = districts.map((district: any) => district.count);
+        const labels1 = students_in_teacher.map((item: any) => `${item.teacher} ${item.group}`);
+        const counts1 = students_in_teacher.map((item: any) => item.count);
+        const colors = counts.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.5)`);
+        setTeacherPie({
+          labels: labels1,
+          datasets: [{
+            label: 'Total de alumnos en su grupo',
+            data: counts1,
+            backgroundColor: colors,
+            hoverOffset: 4
+          }]
+        });
         setDataTable({
           labels,
           datasets: [
@@ -152,13 +176,13 @@ export const HomeScreen = () => {
         </Card>
         <Card
           title='Alumnos por barrio'
-          className='col-start-1 md:col-span-2  lg:col-start-1 lg:col-span-3'
+          className='col-start-1 md:col-span-2 lg:col-start-1 lg:col-span-3'
         >
           <Bar options={options} data={data_table} />
         </Card>
         <Card
           title='Lista de cumpleaños'
-          className='col-start-1 md:col-span-2 lg:col-start-4'
+          className='col-start-1 md:col-start-1 md:col-span-2 lg:col-start-4 lg:col-span-1'
         >
           <List
             className='overflow-y-scroll max-h-96 p-0'
@@ -176,28 +200,11 @@ export const HomeScreen = () => {
             )}
           />
         </Card>
-        <Card className='col-span-4 md:col-span-2'>
+        <Card className='col-start-1 md:col-span-2'>
           <Table columns={[]} dataSource={[]} />
         </Card>
-        <Card className='col-span-4 md:col-span-2'>
-          <Pie data={{
-            labels: [
-              'Red',
-              'Blue',
-              'Yellow'
-            ],
-            datasets: [{
-              label: 'My First Dataset',
-              data: [300, 50, 100],
-              backgroundColor: [
-                'rgb(255, 99, 132)',
-                'rgb(54, 162, 235)',
-                'rgb(255, 205, 86)'
-              ],
-              hoverOffset: 4
-            }]
-          }}
-          />
+        <Card className='col-start-1 md:col-span-2'>
+          <Doughnut data={teacher_pie} options={options} />
         </Card>
       </div>
     </div >
