@@ -1,7 +1,15 @@
 import instance from "."
 
-export const getAllGroups = () => {
-  return instance.get('/groups')
+export interface Pagination {
+  page?: number,
+  limit?: number,
+  level?: string
+}
+
+export const getAllGroups = (query: Pagination) => {
+  const params = new URLSearchParams(query as {})
+
+  return instance.get('/groups?' + params.toString())
 }
 
 export const getGroups = (id: string) => {

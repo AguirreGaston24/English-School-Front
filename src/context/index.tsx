@@ -1,3 +1,4 @@
+import { GroupProvider } from './group'
 import { StudentProvider } from './student'
 import { TeacherProvider } from './teacher'
 
@@ -9,7 +10,9 @@ export const ContextProvider = ({ children }: ContextProviderProps) => {
   return (
     <TeacherProvider>
       <StudentProvider>
-        {children}
+        <GroupProvider>
+          {children}
+        </GroupProvider>
       </StudentProvider>
     </TeacherProvider>
   )

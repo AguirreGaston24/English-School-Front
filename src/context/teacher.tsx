@@ -1,16 +1,16 @@
 import { createContext, useContext, useEffect, useState } from "react"
-import { Pagination, getAllTeachers } from "../api/teacher";
+import { Pagination, deleteTeacher, getAllTeachers } from "../api/teacher";
 import { ITeacher } from "../interfaces/teacher";
-
+import { toast } from "sonner";
+import { useSearchParams } from "react-router-dom";
 
 interface TeacherProviderProps {
   children: JSX.Element | JSX.Element[]
 }
 interface TeacherContextProp {
-
-  onPageSizeChange: (current: any, size: number) => void
-  onPageChange: (page: number) => void
+  handleFilterChange: (term?: [string, string][]) => void
   fetchTeacher: (query: Pagination) => void
+  handleDelete: (id: string) => void
   teachers: ITeacher[],
   loading: boolean,
   page: number,
@@ -29,7 +29,7 @@ export const useTeacherContext = (): TeacherContextProp => {
 }
 
 export const TeacherProvider = ({ children }: TeacherProviderProps) => {
-
+  const [searchParams, setSearchParams] = useSearchParams();
   const [teachers, setTeachers] = useState([])
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
@@ -37,6 +37,24 @@ export const TeacherProvider = ({ children }: TeacherProviderProps) => {
   const [total, setTotal] = useState(0)
 
   console.log(teachers)
+
+  const handleFilterChange = (q?: [string, string][]) => {
+    console.log(q)
+    setSearchParams((params) => {
+      q?.forEach(([term, value]) => {
+        if (value == undefined || value === "") {
+          return params.delete(term)
+        }
+        params.set(term, value)
+      })
+      return params
+    })
+
+    fetchTeacher({
+      page: Number(searchParams.get('page') || 1),
+      limit: Number(searchParams.get('limit') || 10),
+    });
+  };
 
   const fetchTeacher = (query: Pagination) => {
     setLoading(true)
@@ -46,7 +64,7 @@ export const TeacherProvider = ({ children }: TeacherProviderProps) => {
         setTeachers(data.response)
         setPage(data.metadata.current_page)
         setLimit(data.metadata.limit)
-        setTotal(data.metadata.count)
+        setTotal(data.metadata.results)
       })
       .catch((error) => {
         console.log(error)
@@ -56,12 +74,23 @@ export const TeacherProvider = ({ children }: TeacherProviderProps) => {
       })
   }
 
-  const onPageChange = (page: number) => {
-    setPage(page)
-  }
-
-  const onPageSizeChange = (current: any, size: number) => {
-    setLimit(size)
+  const handleDelete = (id: string) => {
+    setLoading(true)
+    deleteTeacher(id)
+      .then(({ data }) => {
+        toast.success('Profresor/a removido con exito!.')
+        fetchTeacher({
+          page,
+          limit
+        })
+      })
+      .catch((error) => {
+        console.log(error)
+        toast.success('Opps! Algo salio mal.')
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   useEffect(() => {
@@ -69,7 +98,7 @@ export const TeacherProvider = ({ children }: TeacherProviderProps) => {
       limit,
       page
     })
-  }, [page,limit])
+  }, [page, limit])
 
 
   return (
@@ -81,8 +110,8 @@ export const TeacherProvider = ({ children }: TeacherProviderProps) => {
         page,
         total,
         fetchTeacher,
-        onPageChange,
-        onPageSizeChange
+        handleDelete,
+        handleFilterChange
       }}>
       {children}
     </Context.Provider>

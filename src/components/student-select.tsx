@@ -1,12 +1,13 @@
 import { Select } from "antd";
 import { useEffect, useState } from "react";
-import { useTeacherContext } from "../context/teacher";
+import { useStudent } from "../context/student";
+import { string } from "zod";
 
 const { Option } = Select;
 
-const TeacherSelect = ({...props}) => {
-  const { teachers, loading, page, fetchTeacher } = useTeacherContext()
-  const [children, setChildren] = useState(teachers);
+const StudentSelect = ({ ...props }) => {
+  const { students, loading, page, limit, fetchData } = useStudent()
+  const [children, setChildren] = useState(students);
 
   const onScroll = async (event: any) => {
     const target = event.target;
@@ -16,20 +17,21 @@ const TeacherSelect = ({...props}) => {
     ) {
       console.log("Load...");
       target.scrollTo(0, target.scrollHeight);
-      fetchTeacher({
-        page: page + 1
+      fetchData({
+        page: page + 1,
+        limit
       })
-      setChildren([...children, ...teachers])
+      setChildren([...children, ...students])
     }
   };
 
   useEffect(() => {
-    fetchTeacher({})
-    setChildren(teachers)
+    fetchData({})
+    setChildren(students)
   }, [])
 
   return (
-    <Select loading={loading} onPopupScroll={onScroll} {...props}>
+    <Select style={{ width: '100%' }} loading={loading} onPopupScroll={onScroll} {...props}>
       {children.map(({ _id, firstname, lastname }) => (
         <Option key={_id} value={`${firstname} ${lastname}`}>
           {`${firstname} ${lastname}`}
@@ -40,4 +42,4 @@ const TeacherSelect = ({...props}) => {
   );
 };
 
-export default TeacherSelect;
+export default StudentSelect;

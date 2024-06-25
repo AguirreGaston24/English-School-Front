@@ -1,13 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { FaBirthdayCake, FaHome } from "react-icons/fa"
-import { FaCircleDollarToSlot } from "react-icons/fa6";
-import { LuClipboardList } from "react-icons/lu"
-import { FaRankingStar } from "react-icons/fa6"
 import { IoIosSchool } from "react-icons/io";
-import { IoReceipt } from "react-icons/io5"
 import { MdGroups } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
-import { Menu } from 'antd'
+import { FaHome } from "react-icons/fa";
+import { Menu } from 'antd';
 
 import { useUiContext } from "../../context/ui";
 import { cn } from '../../libs/utils'
@@ -60,37 +56,13 @@ export const Sidebar = ({ className }: SidebarProps) => {
             onClick: () => handleNavigate('/groups')
           },
           {
-            key: '/list-students',
-            icon: <LuClipboardList size={20} />,
-            label: 'Listado Alumnos',
-            onClick: () => handleNavigate('/list-students')
-          },
-          {
-            key: '/ranking',
-            icon: <FaRankingStar size={20} />,
-            label: 'Ranking por categoria',
-            onClick: () => handleNavigate('/ranking')
-          },
-          {
-            key: '/birthday',
-            icon: <FaBirthdayCake size={20} />,
-            label: 'Cumpleaños Alumnos',
-            onClick: () => handleNavigate('/birthday')
-          },
-          {
-            key: '/pagos-profesores',
-            icon: <FaCircleDollarToSlot size={20} />,
-            label: 'Pagos Profesores',
-            onClick: () => handleNavigate('/pagos-profesores')
-          },
-          {
-            key: '/recibos-alumnos',
-            icon: <IoReceipt size={20} />,
-            label: 'Recibos Alumnos',
-            onClick: () => handleNavigate('/recibos-alumnos')
+            key: '/billing',
+            icon: <MdGroups size={20} />,
+            label: 'Pago Alumnos',
+            onClick: () => handleNavigate('/billing')
           },
         ]}
-        />
+      />
     </nav>
   )
 }

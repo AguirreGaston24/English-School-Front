@@ -13,9 +13,9 @@ import {
 } from 'chart.js';
 
 import instance from '../api';
-import { IUser } from '../interfaces/user';
 import { IStudent } from '../interfaces/student';
 import { Bar, Doughnut, Pie } from 'react-chartjs-2';
+import { CardStats } from '../components/card-stats';
 
 interface IEStudent extends Pick<IStudent, 'firstname' | 'lastname' | 'group'> { daysUntilBirthday: number }
 
@@ -104,7 +104,7 @@ export const HomeScreen = () => {
             {
               label: 'Número de Alumnos',
               data: counts,
-              backgroundColor: 'rgba(53, 162, 235, 0.5)',
+              backgroundColor: colors,
             },
           ],
         })
@@ -118,62 +118,38 @@ export const HomeScreen = () => {
   return (
     <div className='space-y-4'>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="shadow-md">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="text-xl font-medium">
-              Alumnos
-            </div>
-            <PiStudentBold size={24} />
-          </div>
-          <div>
-            <div className="text-2xl font-bold">{loading ? <Spin /> : data.students}</div>
-            <p className="text-xs text-muted-foreground">
-              Todos los alumnos registrados
-            </p>
-          </div>
-        </Card>
-        <Card className="shadow-md">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="text-xl font-medium">
-              Profesores
-            </div>
-            <PiStudentBold size={24} />
-          </div>
-          <div>
-            <div className="text-2xl font-bold">{loading ? <Spin /> : data.teachers}</div>
-            <p className="text-xs text-muted-foreground">
-              Todos los profesores registrados
-            </p>
-          </div>
-        </Card>
-        <Card className="shadow-md">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="text-xl font-medium">
-              Grupos
-            </div>
-            <PiStudentBold size={24} />
-          </div>
-          <div>
-            <div className="text-2xl font-bold">{loading ? <Spin /> : data.total_groups}</div>
-            <p className="text-xs text-muted-foreground">
-              Todos los grupos registrados
-            </p>
-          </div>
-        </Card>
-        <Card className="shadow-md">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="text-xl font-medium">
-              Alumnos
-            </div>
-            <PiStudentBold size={24} />
-          </div>
-          <div>
-            <div className="text-2xl font-bold">{loading ? <Spin /> : 0}</div>
-            <p className="text-xs text-muted-foreground">
-              Todos los alumnos registrados
-            </p>
-          </div>
-        </Card>
+        <CardStats
+          count={data.students}
+          icon={<PiStudentBold size={24} />}
+          title='Alumnos'
+          description='Todos los alumnos registrados'
+          loading={loading}
+          path='/students'
+        />
+        <CardStats
+          count={data.teachers}
+          icon={<PiStudentBold size={24} />}
+          title='Profesores'
+          description='Todos los profesores registrados'
+          loading={loading}
+          path='/teachers'
+        />
+        <CardStats
+          count={data.total_groups}
+          icon={<PiStudentBold size={24} />}
+          title='Grupos'
+          description='Todos los grupos registrados'
+          loading={loading}
+          path='/groups'
+        />
+        <CardStats
+          count={data.total_groups}
+          icon={<PiStudentBold size={24} />}
+          title='Grupos'
+          description='Todos los grupos registrados'
+          loading={loading}
+          path='/groups'
+        />
         <Card
           title='Alumnos por barrio'
           className='col-start-1 md:col-span-2 lg:col-start-1 lg:col-span-3'
@@ -200,7 +176,7 @@ export const HomeScreen = () => {
             )}
           />
         </Card>
-        <Card className='col-start-1 md:col-span-2'>
+        <Card title='Cuotas entrantes' className='col-start-1 md:col-span-2'>
           <Table columns={[]} dataSource={[]} />
         </Card>
         <Card className='col-start-1 md:col-span-2'>

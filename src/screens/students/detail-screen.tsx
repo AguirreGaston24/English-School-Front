@@ -15,6 +15,9 @@ import { ADDRESSES } from "../../constant/address";
 import { SCHOOl } from "../../constant/schools";
 import { useTeacherContext } from "../../context/teacher";
 import { useStudent } from "../../context/student";
+import TeacherSelect from "../../components/teacher-select";
+import { useGroupContext } from "../../context/group";
+import { IGroup } from "../../interfaces/group";
 
 const rule = createSchemaFieldRule(StudentSchema);
 type UserFormValue = z.infer<typeof StudentSchema>;
@@ -22,7 +25,7 @@ type UserFormValue = z.infer<typeof StudentSchema>;
 const { useForm } = Form;
 
 const columns: TableProps<any>['columns'] = [
-  { title: 'Group', dataIndex: 'group_id', key: 'group_id', },
+  { title: 'Group', dataIndex: 'group', key: 'group', },
   { title: 'Nivel', dataIndex: 'level', key: 'nivel' },
   { title: 'Teacher', dataIndex: 'teacher', key: 'teacher' },
   { title: 'Start Date', dataIndex: 'start_date', key: 'start_date', render: (_, record) => moment(record.start_date).format('h:mm A') },
@@ -42,9 +45,9 @@ const columns: TableProps<any>['columns'] = [
 ];
 
 export const StudentDetails = () => {
-  const [selectedGroups, setSelectedGroups] = useState<any>([]);
   const { teachers } = useTeacherContext()
-  const { handleFilterChange } = useStudent()
+  const { groups, loading: loadg, handleFilterChange: fetchGroup } = useGroupContext()
+  const { handleFilterChange, fetchData } = useStudent()
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const params = useParams()
@@ -61,7 +64,8 @@ export const StudentDetails = () => {
       updateStudent(id, data)
         .then(({ data }) => {
           console.log(data)
-          navigate('/students')
+          navigate(-1)
+          handleFilterChange()
           toast.success(message)
         })
         .catch((err) => {
@@ -70,27 +74,31 @@ export const StudentDetails = () => {
         })
         .finally(() => setLoading(false))
     } else {
-      createStudent({
-        ...data,
-        group: selectedGroups
-      })
+      createStudent(data)
         .then(({ data }) => {
           console.log(data)
-          navigate('/students')
+          navigate(-1)
           handleFilterChange()
           toast.success(message)
         })
         .catch((err) => {
           console.log(err)
+          toast.error('Opss. Algo salio mal!.')
         })
         .finally(() => setLoading(false))
     }
   };
 
-  const handleRowSelectionChange = (selectedRowId: any, selectedRows: any[]) => {
+  const handleGroupChange = (value: string) => {
+    form.setFieldValue('level', value)
+    fetchGroup([['level', value]])
+  }
+
+  const handleRowSelectionChange = (selectedRowId: any, selectedRows: IGroup[]) => {
+    const { group, teacher } = selectedRows[0]
     console.log(`selectedRowId: ${selectedRowId}`, 'selectedGroup: ', selectedRows);
-    const groups = selectedRows.map((g) => g.group_id)
-    setSelectedGroups(groups);
+    form.setFieldValue('group', group)
+    form.setFieldValue('teacher', teacher)
   };
 
 
@@ -174,7 +182,7 @@ export const StudentDetails = () => {
                 name="teacher"
                 rules={[rule]}
               >
-                <Select placeholder='Selecciones un profesor/a' options={teachers.map((t) => ({ label: `${t.firstname} ${t.lastname}`, value: `${t.firstname} ${t.lastname}` }))} />
+                <TeacherSelect />
               </Form.Item>
 
             </div>
@@ -247,7 +255,7 @@ export const StudentDetails = () => {
                 name='level'
                 rules={[rule]}
               >
-                <Select options={LEVELS} />
+                <Select options={LEVELS} onChange={handleGroupChange} allowClear />
               </Form.Item>
 
             </div>
@@ -275,7 +283,7 @@ export const StudentDetails = () => {
             <div>
               <Form.Item
                 label="Trabajo"
-                name="Ingrese donde trabaja"
+                name="tutor_occupation"
                 rules={[rule]}
               >
                 <Input placeholder="Ingrese donde trabaja" />
@@ -286,7 +294,6 @@ export const StudentDetails = () => {
                 rules={[rule]}
               >
                 <Input placeholder="Ingrese la localidad" />
-
               </Form.Item>
             </div>
             <div>
@@ -301,10 +308,10 @@ export const StudentDetails = () => {
           </div>
           <Divider>Seleccion de grupo</Divider>
           <Table
-            size='small'
             scroll={{ x: 800 }}
             columns={columns}
-            dataSource={[]}
+            dataSource={groups}
+            loading={loadg}
             rowKey="_id"
             rowSelection={{
               type: 'radio',

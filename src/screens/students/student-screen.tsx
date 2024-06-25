@@ -94,10 +94,10 @@ export const StudentScreen = () => {
         <Button onClick={() => navigate('/students/new')}>Nuevo alumno</Button>
         <Search
           allowClear name="search" placeholder="Buscar..." onSearch={(value) => handleFilterChange([["term", value]])} defaultValue={searchParams.get("term") || ""} />
-        <Select allowClear placeholder='Filtro por barrio' options={ADDRESSES} onChange={(value) => handleFilterChange([['district', value]])} />
-        <Select allowClear placeholder='Filtro por escuela' options={SCHOOl} onChange={(value) => handleFilterChange([['school', value]])} />
-        <Select allowClear placeholder='Filtro por grupo' options={GROUPS} onChange={(value) => handleFilterChange([['group', value]])} />
-        <TeacherSelect />
+        <Select allowClear placeholder='Filtro por barrio' options={ADDRESSES} onChange={(value) => handleFilterChange([['district', value]])} defaultValue={searchParams.get("district") || ""} />
+        <Select allowClear placeholder='Filtro por escuela' options={SCHOOl} onChange={(value) => handleFilterChange([['school', value]])} defaultValue={searchParams.get("school") || ""} />
+        <Select allowClear placeholder='Filtro por grupo' options={GROUPS} onChange={(value) => handleFilterChange([['group', value]])} defaultValue={searchParams.get("group") || ""} />
+        <TeacherSelect allowClear placeholder='Filtro por profe' onChange={(value: string) => handleFilterChange([['teacher', value]])} defaultValue={searchParams.get("teacher") || ""} />
       </div>
       <Table
         size="small"
