@@ -90,13 +90,13 @@ export const GroupsScreen = () => {
               </Form.Item>
             </Form.Item>
             <Divider>Horarios</Divider>
-            <Form.Item label='Hora de inicio' name='start_date' rules={[rule]}>
+            <Form.Item label='Hora de inicio' name='start_date'>
               <TimePicker placeholder='00:00 AM' className='w-full' format='h:mm A' />
             </Form.Item>
-            <Form.Item label='Hora de finalización' name='end_date' rules={[rule]}>
+            <Form.Item label='Hora de finalización' name='end_date'>
               <TimePicker placeholder='00:00 PM' className='w-full' format='h:mm A' />
             </Form.Item>
-            <Form.Item label='Dias' name='days' rules={[rule]}>
+            <Form.Item label='Dias' name='days'>
               <Checkbox.Group options={DAYS_OF_WEEK.map((d: any) => d)} />
             </Form.Item>
             <Button block loading={load} htmlType='submit'>Cargar Informacíon</Button>
