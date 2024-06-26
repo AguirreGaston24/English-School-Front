@@ -1,7 +1,6 @@
 import { Select } from "antd";
 import { useEffect, useState } from "react";
 import { useStudent } from "../context/student";
-import { string } from "zod";
 
 const { Option } = Select;
 
@@ -18,7 +17,7 @@ const StudentSelect = ({ ...props }) => {
       console.log("Load...");
       target.scrollTo(0, target.scrollHeight);
       fetchData({
-        page: page + 1,
+        page,
         limit
       })
       setChildren([...children, ...students])

@@ -1,3 +1,4 @@
+import { BillingProvider } from './billing'
 import { GroupProvider } from './group'
 import { StudentProvider } from './student'
 import { TeacherProvider } from './teacher'
@@ -11,7 +12,9 @@ export const ContextProvider = ({ children }: ContextProviderProps) => {
     <TeacherProvider>
       <StudentProvider>
         <GroupProvider>
-          {children}
+          <BillingProvider>
+            {children}
+          </BillingProvider>
         </GroupProvider>
       </StudentProvider>
     </TeacherProvider>

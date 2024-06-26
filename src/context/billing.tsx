@@ -1,38 +1,37 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { IGroup } from '../interfaces/group'
-import { Pagination, getAllGroups } from '../api/groups'
 import { useSearchParams } from 'react-router-dom'
+import { Pagination, getAllBilling } from '../api/billing'
 
-interface GroupContextProps {
+interface BilingContextProps {
   handleFilterChange: (q?: [string, string][]) => void
-  groups: IGroup[]
+  billings: any[]
   loading: boolean
   page: number
   limit: number
   total: number
 }
 
-interface GroupProviderProps {
+interface BillingProviderProps {
   children: JSX.Element | JSX.Element[]
 }
 
-const Context = createContext<GroupContextProps | undefined>(undefined)
+const Context = createContext<BilingContextProps | undefined>(undefined)
 
-export const useGroupContext = () => {
+export const useBillingContext = () => {
   const context = useContext(Context);
   if (!context) {
-    throw new Error('Group context debe ser utilizado dentro de un provider.');
+    throw new Error('Billing context debe ser utilizado dentro de un provider.');
   }
   return context;
 }
 
-export const GroupProvider = ({ children }: GroupProviderProps) => {
+export const BillingProvider = ({ children }: BillingProviderProps) => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [limit, setLimit] = useState(10)
-  const [groups, setGroups] = useState([])
+  const [billings, setBillings] = useState([])
 
   const handleFilterChange = (q?: [string, string][]) => {
     console.log(q)
@@ -49,19 +48,18 @@ export const GroupProvider = ({ children }: GroupProviderProps) => {
     fetchData({
       page: Number(searchParams.get('page') || 1),
       limit: Number(searchParams.get('limit') || 10),
-      level: searchParams.get('level') || '',
-      group: searchParams.get('group') || '',
     });
   };
 
   const fetchData = (query: Pagination) => {
     setLoading(true)
-    getAllGroups(query)
+    getAllBilling(query)
       .then(({ data }) => {
-        setPage(data.metadata.current_page)
-        setLimit(data.metadata.limit)
-        setTotal(data.metadata.count)
-        setGroups(data.response)
+        console.log(data)
+        // setPage(data.metadata.current_page)
+        // setLimit(data.metadata.limit)
+        // setTotal(data.metadata.count)
+        setBillings(data)
       })
       .catch((error) => {
         console.log(error)
@@ -74,9 +72,9 @@ export const GroupProvider = ({ children }: GroupProviderProps) => {
   }, [])
 
 
-  const contextValue: GroupContextProps = {
+  const contextValue: BilingContextProps = {
     handleFilterChange,
-    groups,
+    billings,
     loading,
     page,
     limit,

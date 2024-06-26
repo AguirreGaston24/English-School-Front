@@ -39,7 +39,6 @@ export const TeacherProvider = ({ children }: TeacherProviderProps) => {
   console.log(teachers)
 
   const handleFilterChange = (q?: [string, string][]) => {
-    console.log(q)
     setSearchParams((params) => {
       q?.forEach(([term, value]) => {
         if (value == undefined || value === "") {
@@ -60,7 +59,6 @@ export const TeacherProvider = ({ children }: TeacherProviderProps) => {
     setLoading(true)
     getAllTeachers(query)
       .then(({ data }) => {
-        console.log(data)
         setTeachers(data.response)
         setPage(data.metadata.current_page)
         setLimit(data.metadata.limit)

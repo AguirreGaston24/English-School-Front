@@ -4,6 +4,7 @@ export interface Pagination {
   page?: number,
   limit?: number,
   level?: string
+  group?: string
 }
 
 export const getAllGroups = (query: Pagination) => {

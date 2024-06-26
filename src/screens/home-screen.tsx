@@ -47,12 +47,7 @@ export const HomeScreen = () => {
 
   const [teacher_pie, setTeacherPie] = useState<any>({
     labels: [],
-    datasets: [{
-      label: 'Alumnos por Profesor y Grupo',
-      data: [],
-      backgroundColor: [],
-      hoverOffset: 4
-    }]
+    datasets: []
   });
 
 
@@ -89,15 +84,15 @@ export const HomeScreen = () => {
         const labels1 = students_in_teacher.map((item: any) => `${item.teacher} ${item.group}`);
         const counts1 = students_in_teacher.map((item: any) => item.count);
         const colors = counts.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.5)`);
-        setTeacherPie({
-          labels: labels1,
-          datasets: [{
-            label: 'Total de alumnos en su grupo',
-            data: counts1,
-            backgroundColor: colors,
-            hoverOffset: 4
-          }]
-        });
+        // setTeacherPie({
+        //   labels: labels1,
+        //   datasets: [{
+        //     label: 'Total de alumnos en su grupo',
+        //     data: counts1,
+        //     backgroundColor: colors,
+        //     hoverOffset: 4
+        //   }]
+        // });
         setDataTable({
           labels,
           datasets: [

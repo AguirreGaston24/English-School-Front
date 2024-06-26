@@ -61,7 +61,10 @@ export const StudentDetails = () => {
   const onSubmit = async (data: UserFormValue) => {
     setLoading(true)
     if (id) {
-      updateStudent(id, data)
+      updateStudent(id, {
+        ...data,
+        group: form.getFieldValue('group')
+      })
         .then(({ data }) => {
           console.log(data)
           navigate(-1)
@@ -74,7 +77,10 @@ export const StudentDetails = () => {
         })
         .finally(() => setLoading(false))
     } else {
-      createStudent(data)
+      createStudent({
+        ...data,
+        group: form.getFieldValue('group')
+      })
         .then(({ data }) => {
           console.log(data)
           navigate(-1)
@@ -95,9 +101,10 @@ export const StudentDetails = () => {
   }
 
   const handleRowSelectionChange = (selectedRowId: any, selectedRows: IGroup[]) => {
-    const { group, teacher } = selectedRows[0]
+    const { group, teacher, level } = selectedRows[0]
     console.log(`selectedRowId: ${selectedRowId}`, 'selectedGroup: ', selectedRows);
     form.setFieldValue('group', group)
+    form.setFieldValue('level', level)
     form.setFieldValue('teacher', teacher)
   };
 

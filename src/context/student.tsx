@@ -36,7 +36,7 @@ export const StudentProvider = ({ children }: StudentProviderProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    handleFilterChange()
+    fetchData({})
   }, [])
 
   const handleFilterChange = (q?: [string, string][]) => {
