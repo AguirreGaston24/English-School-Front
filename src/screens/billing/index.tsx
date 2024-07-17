@@ -1,4 +1,4 @@
-import { Card, Table, Tag } from "antd"
+import { Button, Card, Input, Select, Table, Tag } from "antd"
 import { DAYS_OF_WEEK } from "../../constant/days_of_week";
 import moment from "moment";
 import StudentSelect from "../../components/student-select";
@@ -6,11 +6,13 @@ import { useGroupContext } from "../../context/group";
 import { getStudent } from "../../api/students";
 import { getBilling } from "../../api/billing";
 import { useState } from "react";
+import { MONTHS } from "../../constant/months";
+import { BECAS } from "../../constant/becas";
 
 export const BillingScreen = () => {
   const { groups, handleFilterChange, loading } = useGroupContext()
   const [billings, setBillings] = useState<any>([])
-
+  const [selectedMonth, setSelectedMonth] = useState(null);
 
   const columns = [
     {
@@ -141,13 +143,29 @@ export const BillingScreen = () => {
   ];
 
 
+
+
   return (
     <div>
-      <div className="grid gap-4 grid-cols-4">
-        <Card title="Alumno" className="col-span-4">
-          <StudentSelect className="col-span-4" onChange={(_: string, value: any) => handleGetUserGroup(value.key)} />
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-4">
+        <h2 className="text-lg font-bold col-span-1 lg:col-span-4 text-center md:text-start">Historial sobre pagos de alumnos</h2>
+        <Card title="Seleccionar un alumno" className="col-span-1 lg:col-span-4 p-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="flex items-center">
+              <StudentSelect className="w-full" onChange={(_: string, value: any) => handleGetUserGroup(value.key)} />
+            </div>
+            <div className="flex items-center">
+              <h2 className="md:text-sm w-1/3 md:w-1/4">N° de telefono:</h2>
+              <Input className="w-2/3 md:w-3/4" placeholder="N° de telefono" />
+            </div>
+            <div className="flex items-center justify-center">
+              <Button type="primary" className="w-full md:w-auto">
+                Enviar Recibo
+              </Button>
+            </div>
+          </div>
         </Card>
-        <Card title="Grupo" className="col-span-4">
+        <Card title="Informacion del alumno seleccionado" className="col-span-1 lg:col-span-4">
           <Table
             loading={loading}
             dataSource={groups}
@@ -155,10 +173,10 @@ export const BillingScreen = () => {
             scroll={{ x: 800 }}
           />
         </Card>
-        <Card title='Detalle del recibo' className="col-span-4">
-          <div className="grid gap-4 grid-cols-4">
+        <Card title='Detalle del recibo' className="col-span-1 lg:col-span-4">
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-4">
             <Table
-              className="col-start-1 col-span-4 md:col-span-1"
+              className="col-span-1 md:col-span-1"
               scroll={{ x: 200 }}
               pagination={{
                 pageSize: 20
@@ -171,11 +189,49 @@ export const BillingScreen = () => {
               }))}
               columns={columns1} />
             <Table
-              className="col-start-1 col-span-4 md:col-start-2 md:col-span-3"
+              className="col-span-1 md:col-span-3"
               dataSource={billings}
               scroll={{ x: 800 }}
               columns={columns}
             />
+          </div>
+        </Card>
+        <h2 className="text-lg font-bold col-span-1 lg:col-span-4 text-center md:text-start">Registrar pagos de alumnos</h2>
+        <Card className="col-span-1 lg:col-span-4 md:p-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="flex w-full items-center">
+              <h2 className="md:text-sm w-1/3 md:w-1/4">N° de recibo:</h2>
+              <Input className="w-2/3 md:w-3/4" placeholder="N° de recibo" />
+            </div>
+            <div className="flex w-full items-center">
+              <h2 className="md:text-sm w-1/3 md:w-1/4">Mes a pagar:</h2>
+              <Select className="w-2/3 md:w-3/4" placeholder="Seleccionar un mes" options={MONTHS} />
+            </div>
+            <div className="flex w-full items-center">
+              <h2 className="md:text-sm w-1/3 md:w-1/4">Tipo de beca:</h2>
+              <Select className="w-2/3 md:w-3/4" placeholder="Selecciona una beca" options={BECAS} />
+            </div>
+            <div className="flex w-full items-center">
+              <h2 className="md:text-sm w-1/3 md:w-1/4">Forma de pago:</h2>
+              <Select className="w-2/3 md:w-3/4" placeholder="Selecciona una forma de pago" options={BECAS} />
+            </div>
+            <div className="flex w-full items-center">
+              <h2 className="md:text-sm w-1/3 md:w-1/4">Valor de la cuota:</h2>
+              <Input className="w-2/3 md:w-3/4" placeholder="Ingresa el valor de la cuota" />
+            </div>
+            <div className="flex w-full items-center">
+              <h2 className="md:text-sm w-1/3 md:w-1/4">Entrego:</h2>
+              <Input className="w-2/3 md:w-3/4" placeholder="Ingresa el valor que entrego" />
+            </div>
+            <div className="flex w-full items-center">
+              <h2 className="md:text-sm w-1/3 md:w-1/4">Debe:</h2>
+              <Input className="w-2/3 md:w-3/4" placeholder="Ingresa el valor que debe" />
+            </div>
+            <div className="flex w-full justify-center md:col-span-2">
+              <Button size="large" className="text-white" type="primary">
+                Guardar
+              </Button>
+            </div>
           </div>
         </Card>
       </div>
