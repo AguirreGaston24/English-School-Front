@@ -3,6 +3,7 @@ import { IoIosSchool } from "react-icons/io";
 import { MdGroups } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { FaHome } from "react-icons/fa";
+import { GiReceiveMoney } from "react-icons/gi";
 import { Menu } from 'antd';
 
 import { useUiContext } from "../../context/ui";
@@ -56,10 +57,16 @@ export const Sidebar = ({ className }: SidebarProps) => {
             onClick: () => handleNavigate('/groups')
           },
           {
-            key: '/billing',
-            icon: <MdGroups size={20} />,
-            label: 'Pago Alumnos',
-            onClick: () => handleNavigate('/billing')
+            key: '/billing-students',
+            icon: <GiReceiveMoney size={20} />,
+            label: 'Pagos Alumnos',
+            onClick: () => handleNavigate('/billing-students')
+          },
+          {
+            key: '/billing-teachers',
+            icon: <GiReceiveMoney size={20} />,
+            label: 'Pagos Profesores',
+            onClick: () => handleNavigate('/billing-teachers')
           },
         ]}
       />

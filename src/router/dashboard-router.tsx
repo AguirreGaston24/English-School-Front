@@ -4,7 +4,8 @@ import { HomeScreen, StudentDetails, StudentScreen } from "../screens"
 import { TeacherScreen } from "../screens/teacher"
 import { TeacherDetails } from "../screens/teacher/detail-screen"
 import { GroupsScreen } from "../screens/groups"
-import { BillingScreen } from "../screens/billing"
+import { BillingStudentScreen } from "../screens/billing-students"
+import { BillingTeachersScreen } from "../screens/billing-teachers"
 
 
 export const DashboardRouter = () => {
@@ -20,7 +21,8 @@ export const DashboardRouter = () => {
         <Route path=":id" element={<TeacherDetails />} />
       </Route>
       <Route path='groups' element={<GroupsScreen />} />
-      <Route path='billing' element={<BillingScreen />} />
+      <Route path='billing-students' element={<BillingStudentScreen />} />
+      <Route path='billing-teachers' element={<BillingTeachersScreen />} />
     </Routes>
   )
 }
