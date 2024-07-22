@@ -1,42 +1,29 @@
 import { createSchemaFieldRule } from "antd-zod";
 import { Button, Form, Input } from "antd";
 import { z } from "zod";
-
-import { cn } from "../../libs/utils"
 import { useAuthContext } from "../../context/auth";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
-  email: z.string({ required_error: 'El correo es requerido' }).email({ message: "Inserte un correo valido." }),
+  email: z.string({ required_error: 'El correo es requerido' }).email({ message: "Inserte un correo válido." }),
   password: z.string({ required_error: 'La contraseña es requerida' }),
+  username: z.string({ required_error: "El nombre de usuario es requerido" }),
 });
 
 const rule = createSchemaFieldRule(formSchema);
 type UserFormValue = z.infer<typeof formSchema>;
 
-export const LoginScreen = () => {
-  const navigate = useNavigate()
-  const { handleLogin, loginErrors, loading } = useAuthContext()
+export const RegisterScreen = () => {
+  const { loading } = useAuthContext()
+  const { handleRegister, registerErrors, uiLoading } = useAuthContext();
+  const navigate = useNavigate();
+
   const onSubmit = async (data: UserFormValue) => {
-    console.log(data)
-    handleLogin(data)
+    handleRegister(data);
   };
-
-const handleNavigate = (path: string) => {
-  navigate(path)
-}
-
 
   return (
     <div className="relative h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
-      <a
-        href="/examples/authentication"
-        className={cn(
-          "absolute right-4 hidden top-4 md:right-8 md:top-8",
-        )}
-      >
-        Login
-      </a>
       <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
         <div className="absolute inset-0 bg-login_image bg-no-repeat bg-cover bg-center bg-login-pattern" />
         <div className="relative z-20 flex items-center text-lg font-medium">
@@ -55,12 +42,9 @@ const handleNavigate = (path: string) => {
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
-              Iniciar Sesión
+              Registrarse
             </h1>
           </div>
-          {loginErrors && loginErrors.map((r: any) => (
-            <p className="text-red-500 text-center">{r}</p>
-          ))}
           <Form
             layout="vertical"
             requiredMark={false}
@@ -89,16 +73,16 @@ const handleNavigate = (path: string) => {
                 size="large"
                 className="w-full mt-2"
               >
-                Iniciar sesión
+                Registrarme
               </Button>
             </Form.Item>
             <div className="items-center justify-center flex-col text-center">
-              <p className="mb-3">¿No tienes una cuenta?</p>
-              <a href="/register">Registrarse</a>
+              <p className="mb-3">¿Ya tienes una cuenta?</p>
+              <a href="/login">Iniciar Sesion</a>
             </div>
           </Form>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
