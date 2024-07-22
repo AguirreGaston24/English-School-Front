@@ -1,6 +1,9 @@
 import { Avatar, Card, List, Spin, Table } from 'antd'
 import { useEffect, useState } from 'react';
 import { PiStudentBold } from "react-icons/pi";
+import { FaChalkboardTeacher } from "react-icons/fa";
+import { MdGroups } from "react-icons/md";
+import { BsCurrencyDollar } from "react-icons/bs";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -38,9 +41,18 @@ export const HomeScreen = () => {
     students: 0,
     teachers: 0,
     total_groups: 0,
+    billing_students: 0,
   })
 
-  const [data_table, setDataTable] = useState<any>({
+
+  
+  const [studentsTableSchool, setStudentsTableSchool] = useState<any>({
+    labels: [],
+    datasets: [],
+  });
+
+
+  const [studentsTable, setStudentsTable] = useState<any>({
     labels: [],
     datasets: [],
   });
@@ -71,14 +83,57 @@ export const HomeScreen = () => {
     },
   };
 
+  const studentsSchool = {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: 'Alumnos por Escuela',
+      },
+    },
+  };
+
+
   useEffect(() => {
     setLoading(true)
     instance.get('/stats')
       .then(({ data }) => {
         setData(data);
         console.log(data)
-        const districts = data.districs
-        const students_in_teacher = data.students_in_teacher
+        const districts = data.districs;
+        const students_in_teacher = data.students_in_teacher;
+        const labels = districts.map((district: any) => district._id);
+        const counts = districts.map((district: any) => district.count);
+        const labels1 = students_in_teacher.map((item: any) => `${item.teacher} ${item.group}`);
+        const counts1 = students_in_teacher.map((item: any) => item.count);
+        const colors = counts.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.5)`);
+    
+        setStudentsTableSchool({
+          labels,
+          datasets: [
+            {
+              label: 'Número de Alumnos por escuela',
+              data: counts,
+              backgroundColor: colors,
+            },
+          ],
+        })
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      })
+      .finally(() => setLoading(false));
+  }, [])
+
+
+  useEffect(() => {
+    setLoading(true)
+    instance.get('/stats')
+      .then(({ data }) => {
+        setData(data);
+        console.log(data)
+        const districts = data.districs;
+        const students_in_teacher = data.students_in_teacher;
         const labels = districts.map((district: any) => district._id);
         const counts = districts.map((district: any) => district.count);
         const labels1 = students_in_teacher.map((item: any) => `${item.teacher} ${item.group}`);
@@ -93,7 +148,7 @@ export const HomeScreen = () => {
         //     hoverOffset: 4
         //   }]
         // });
-        setDataTable({
+        setStudentsTable({
           labels,
           datasets: [
             {
@@ -112,6 +167,7 @@ export const HomeScreen = () => {
 
   return (
     <div className='space-y-4'>
+      <h1 className='text-2xl font-bold'>Informacion general</h1>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <CardStats
           count={data.students}
@@ -123,7 +179,7 @@ export const HomeScreen = () => {
         />
         <CardStats
           count={data.teachers}
-          icon={<PiStudentBold size={24} />}
+          icon={<FaChalkboardTeacher size={24} />}
           title='Profesores'
           description='Todos los profesores registrados'
           loading={loading}
@@ -131,25 +187,25 @@ export const HomeScreen = () => {
         />
         <CardStats
           count={data.total_groups}
-          icon={<PiStudentBold size={24} />}
+          icon={<MdGroups size={24} />}
           title='Grupos'
           description='Todos los grupos registrados'
           loading={loading}
           path='/groups'
         />
         <CardStats
-          count={data.total_groups}
-          icon={<PiStudentBold size={24} />}
-          title='Grupos'
-          description='Todos los grupos registrados'
+          count={data.billing_students}
+          icon={<BsCurrencyDollar size={24} />}
+          title='Pagos Alumnos'
+          description='Todos los pagos de los alumnos registrados'
           loading={loading}
-          path='/groups'
+          path='/billing-students'
         />
         <Card
           title='Alumnos por barrio'
           className='col-start-1 md:col-span-2 lg:col-start-1 lg:col-span-3'
         >
-          <Bar options={options} data={data_table} />
+          <Bar options={options} data={studentsTable} />
         </Card>
         <Card
           title='Lista de cumpleaños'
@@ -171,12 +227,13 @@ export const HomeScreen = () => {
             )}
           />
         </Card>
-        <Card title='Cuotas entrantes' className='col-start-1 md:col-span-2'>
-          <Table columns={[]} dataSource={[]} />
+        <Card
+          title='Alumnos por escuela'
+          className='col-start-1 md:col-span-2 lg:col-start-1 lg:col-span-3'
+        >
+          <Bar options={studentsSchool} data={studentsTable} />
         </Card>
-        <Card className='col-start-1 md:col-span-2'>
-          <Doughnut data={teacher_pie} options={options} />
-        </Card>
+        
       </div>
     </div >
   )
