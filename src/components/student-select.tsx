@@ -6,37 +6,44 @@ const { Option } = Select;
 
 const StudentSelect = ({ ...props }) => {
   const { students, loading, page, limit, fetchData } = useStudent()
-  const [children, setChildren] = useState(students);
+  const [hasMore, setHasMore] = useState(true);
 
   const onScroll = async (event: any) => {
     const target = event.target;
     if (
       !loading &&
-      target.scrollTop + target.offsetHeight === target.scrollHeight
+      hasMore &&
+      target.scrollTop + target.offsetHeight >= target.scrollHeight - 10
     ) {
-      console.log("Load...");
-      target.scrollTo(0, target.scrollHeight);
-      fetchData({
-        page,
-        limit
-      })
-      setChildren([...children, ...students])
+      console.log("Load more students...");
+      await fetchData({ page, limit });
+
+      // Actualizar la variable `hasMore` si no hay más estudiantes para cargar
+      if (students.length < page * limit) {
+        setHasMore(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchData({})
-    setChildren(students)
-  }, [])
+    if (!students.length) {
+      fetchData({});
+    }
+  }, []);
 
   return (
-    <Select style={{ width: '100%' }} loading={loading} onPopupScroll={onScroll} {...props}>
-      {children.map(({ _id, firstname, lastname }) => (
+    <Select
+      style={{ width: '100%' }}
+      loading={loading}
+      onPopupScroll={onScroll}
+      {...props}
+    >
+      {students.map(({ _id, firstname, lastname }) => (
         <Option key={_id} value={`${firstname} ${lastname}`}>
           {`${firstname} ${lastname}`}
         </Option>
       ))}
-      {loading && <Option>Loading...</Option>}
+      {loading && <Option disabled>Cargando...</Option>}
     </Select>
   );
 };
