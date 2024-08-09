@@ -1,8 +1,8 @@
 import { createSchemaFieldRule } from "antd-zod";
 import { Button, Form, Input } from "antd";
 import { z } from "zod";
+
 import { useAuthContext } from "../../context/auth";
-import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   email: z.string({ required_error: 'El correo es requerido' }).email({ message: "Inserte un correo válido." }),
@@ -16,7 +16,6 @@ type UserFormValue = z.infer<typeof formSchema>;
 export const RegisterScreen = () => {
   const { loading } = useAuthContext()
   const { handleRegister, registerErrors, uiLoading } = useAuthContext();
-  const navigate = useNavigate();
 
   const onSubmit = async (data: UserFormValue) => {
     handleRegister(data);
@@ -45,11 +44,21 @@ export const RegisterScreen = () => {
               Registrarse
             </h1>
           </div>
+          {registerErrors && registerErrors.map((r: any) => (
+            <p className="text-red-500 text-center">{r}</p>
+          ))}
           <Form
             layout="vertical"
             requiredMark={false}
             onFinish={onSubmit}
           >
+            <Form.Item
+              rules={[rule]}
+              label="Nombre de Usuario"
+              name="username"
+            >
+              <Input size="large" />
+            </Form.Item>
             <Form.Item
               rules={[rule]}
               label="Correo electrónico"
