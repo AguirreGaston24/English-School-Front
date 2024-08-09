@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       .then(({ data }) => {
         setUser(data);
         localStorage.setItem('token', data.token);
-        navigate('/login'); // Redirige a la pantalla de login después del registro exitoso
+        navigate('/');
       })
       .catch((error) => {
         if (error.response) {
