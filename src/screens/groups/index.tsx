@@ -39,8 +39,8 @@ const columns: TableProps<any>['columns'] = [
 
 export const GroupsScreen = () => {
   const { teachers } = useTeacherContext();
-  const { groups, limit, loading, page, total } = useGroupContext()
-  const [load, setLoad] = useState(false);
+  const { groups, limit, loading, handleFilterChange, page, total } = useGroupContext()
+  const [load, setLoad] = useState(loading);
   const [form] = useForm();
 
 
@@ -54,6 +54,10 @@ export const GroupsScreen = () => {
       .catch((error) => console.log(error))
       .finally(() => setLoad(false));
   };
+
+  useEffect(() => {
+    handleFilterChange()
+  }, [])
 
   return (
     <div className='grid grid-cols-1 gap-y-6 lg:gap-x-6 lg:grid-cols-3 '>
@@ -108,7 +112,7 @@ export const GroupsScreen = () => {
           size='small'
           dataSource={groups}
           columns={columns}
-          loading={load}
+          loading={loading}
           scroll={{ x: 1800 }}
           rowKey="_id"
           pagination={{

@@ -1,4 +1,4 @@
-import { TableProps, Space, Tooltip, Button, Table, Input, Modal, Select } from "antd"
+import { TableProps, Space, Tooltip, Button, Table, Input, Modal, Select, Form } from "antd"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { MdDelete } from "react-icons/md";
 import { FaPencil } from "react-icons/fa6"
@@ -19,8 +19,7 @@ const { confirm } = Modal;
 
 export const StudentScreen = () => {
   const { students, loading, limit, page, total, fetchData, handleFilterChange } = useStudent()
-  const [searchParams, setSearchParams] = useSearchParams();
-  const { teachers } = useTeacherContext()
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const showDeleteConfirm = (studentId: string) => {
@@ -100,33 +99,29 @@ export const StudentScreen = () => {
 
   return (
     <div>
-      <div className="px-4">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 py-2 mb-5 w-full  items-center ">
-          <Button className="w-full " onClick={() => navigate('/students/new')}>Agregar alumno</Button>
-          <div className="w-full">
-            <p className="mb-3">Buscar de manera general</p>
-            <Search
-              allowClear name="search" placeholder="Buscar..." onSearch={(value) => handleFilterChange([["term", value]])} defaultValue={searchParams.get("term") || ""} className="w-full" />
-          </div>
-          <div className="w-full">
-            <p className="mb-3">Filtra por barrio</p>
-            <Select allowClear placeholder='Busca por barrio' options={ADDRESSES} onChange={(value) => handleFilterChange([['district', value]])} defaultValue={searchParams.get("district") || ""} className="w-full" />
-          </div>
-          <div className="w-full">
-            <p className="mb-3">Filtra por escuela</p>
-            <Select allowClear placeholder='Busca por escuela' options={SCHOOl} onChange={(value) => handleFilterChange([['school', value]])} defaultValue={searchParams.get("school") || ""} className="w-full" />
-          </div>
-          <div className="w-full">
-            <p className="mb-3">Filtra por grupo</p>
-            <Select allowClear placeholder='Busca por grupo' options={GROUPS} onChange={(value) => handleFilterChange([['group', value]])} defaultValue={searchParams.get("group") || ""} className="w-full" />
-          </div>
-          <div className="w-full">
-            <p className="mb-3">Filtra por profe</p>
-            <TeacherSelect allowClear placeholder='Busca por profe' onChange={(value: string) => handleFilterChange([['teacher', value]])} defaultValue={searchParams.get("teacher") || ""} className="w-full" />
-          </div>
-        </div>
-      </div>
-      <h1 className="text-2xl font-bold mb-5">Alumnos Registrados:</h1>
+      <Form
+        className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-4"
+        layout="vertical"
+      >
+        <Form.Item label='Registrar un alumno'>
+          <Button block onClick={() => navigate('/students/new')}>Nuevo alumno</Button>
+        </Form.Item>
+        <Form.Item label='Buscador'>
+          <Search allowClear name="search" placeholder="Buscar..." onSearch={(value) => handleFilterChange([["term", value]])} defaultValue={searchParams.get("term") || undefined} />
+        </Form.Item>
+        <Form.Item label='Filtro por barrio'>
+          <Select allowClear placeholder='Filtro por barrio' options={ADDRESSES} onChange={(value) => handleFilterChange([['district', value]])} defaultValue={searchParams.get("district") || undefined} />
+        </Form.Item>
+        <Form.Item label='Filtro por escuela'>
+          <Select allowClear placeholder='Escuela Provincial Nº 462' options={SCHOOl} onChange={(value) => handleFilterChange([['school', value]])} defaultValue={searchParams.get("school") || undefined} />
+        </Form.Item>
+        <Form.Item label='Filtro por grupo'>
+          <Select allowClear placeholder='G1' options={GROUPS} onChange={(value) => handleFilterChange([['group', value]])} defaultValue={searchParams.get("group") || undefined} />
+        </Form.Item>
+        <Form.Item label='Filtro por profe'>
+          <TeacherSelect allowClear placeholder='Glauco Morán' onChange={(value: string) => handleFilterChange([['teacher', value]])} defaultValue={searchParams.get("teacher") || undefined} />
+        </Form.Item>
+      </Form>
       <Table
         size="small"
         dataSource={students}
