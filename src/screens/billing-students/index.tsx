@@ -1,6 +1,6 @@
 import { Button, Card, Form, Input, Select, Table } from "antd"
 import { useForm } from "antd/es/form/Form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import StudentSelect from "../../components/student-select";
@@ -18,6 +18,7 @@ export const BillingStudentScreen = () => {
   const { groups, loading, handleFilterChange, } = useGroupContext()
   const [billings, setBillings] = useState<any>([])
   const [studentId, setStudentId] = useState('');
+  const [discount, setDiscount] = useState(0.00);
   const [phone, setPhone] = useState('');
   const [form] = useForm()
 
@@ -60,9 +61,26 @@ export const BillingStudentScreen = () => {
       })
       .catch((error) => {
         console.log(error)
-        toast.success('Error al crear la facturacion!.')
+        toast.error('Error al crear la facturacion!.')
       })
   }
+  const amount = Form.useWatch('amount', form);
+  const ds = Form.useWatch('scholarshipType');
+
+  useEffect(() => {
+    const calculateTotal = () => {
+      const amount = form.getFieldValue('amount') || 0;
+      const discount = form.getFieldValue('scholarshipType') || 0;
+      const total = amount - (amount * discount) / 100;
+      form.setFieldValue('feeAmount', JSON.stringify(total))
+      setDiscount(total)
+    };
+    calculateTotal()
+  }, [amount, ds]);
+
+  const customValue = Form.useWatch((values) => `name: ${values.name || ''}`, form);
+
+  console.log(discount)
 
   return (
     <div>
@@ -160,6 +178,7 @@ export const BillingStudentScreen = () => {
               <Form.Item
                 label="Valor de la cuota:"
                 name="amount"
+                help={`Total a descontar: $${discount}`}
               >
                 <Input type="number" placeholder="$00.0" />
               </Form.Item>
@@ -167,7 +186,7 @@ export const BillingStudentScreen = () => {
                 label="Entrego:"
                 name="feeAmount"
               >
-                <Input placeholder="$00.0" />
+                <Input type="" placeholder="$00.0" />
               </Form.Item>
               <Form.Item
                 label="Debe:"

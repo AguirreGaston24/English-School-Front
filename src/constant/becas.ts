@@ -11,7 +11,7 @@ export const BECAS = [
   },
   {
     label: "%20",
-    value: 0.15,
+    value: 0.20,
     id: 3
   },
   {
