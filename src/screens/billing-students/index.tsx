@@ -1,4 +1,4 @@
-import { Button, Card, Form, Input, Select, Table } from "antd"
+import { Button, Card, Form, Input, Select, Space, Table, Tooltip } from "antd"
 import { useForm } from "antd/es/form/Form";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -13,6 +13,8 @@ import { GROUP_COLUMNS } from "./constants/group_columns";
 import { PAY_COLUMNS } from "./constants/pay_columns";
 import { BILLING_COLUMNS } from "./constants/billing_columns";
 import { IStudent } from "../../interfaces/student";
+import { BECAS_COLUMNS } from "./constants/becas_columns";
+import { Becas } from "../../interfaces/becas";
 
 export const BillingStudentScreen = () => {
   const { groups, loading, handleFilterChange, } = useGroupContext()
@@ -21,6 +23,13 @@ export const BillingStudentScreen = () => {
   const [discount, setDiscount] = useState(0.00);
   const [phone, setPhone] = useState('');
   const [form] = useForm()
+
+
+  const becas: Becas[] = [
+    { name: 'Beca A', price: 1000 },
+    { name: 'Beca B', price: 1500 },
+  ];
+
 
   const handleGetUserGroup = (id: string) => {
     getStudent(id)
@@ -201,6 +210,15 @@ export const BillingStudentScreen = () => {
               </div>
             </div>
           </Form>
+        </Card>
+        <h2 className="text-lg font-bold col-span-1 lg:col-span-4 text-center md:text-start">Becas Actuales</h2>
+        <Card className="col-span-1 lg:col-span-4 md:p-5">
+          <Table
+            loading={loading}
+            dataSource={becas}
+            columns={BECAS_COLUMNS}
+            scroll={{ x: 800 }}
+          />
         </Card>
       </div>
     </div>
