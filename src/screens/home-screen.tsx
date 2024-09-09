@@ -1,4 +1,4 @@
-import { Avatar, Card, List, Spin, Table } from 'antd'
+import { Avatar, Card, List } from 'antd'
 import { useEffect, useState } from 'react';
 import { PiStudentBold } from "react-icons/pi";
 import { FaChalkboardTeacher } from "react-icons/fa";
@@ -13,11 +13,12 @@ import {
   Title,
   Tooltip,
   Legend,
+  plugins,
 } from 'chart.js';
 
 import instance from '../api';
 import { IStudent } from '../interfaces/student';
-import { Bar, Doughnut, Pie } from 'react-chartjs-2';
+import { Bar, Doughnut } from 'react-chartjs-2';
 import { CardStats } from '../components/card-stats';
 
 interface IEStudent extends Pick<IStudent, 'firstname' | 'lastname' | 'group'> { daysUntilBirthday: number }
@@ -45,7 +46,7 @@ export const HomeScreen = () => {
   })
 
 
-  
+
   const [studentsTableSchool, setStudentsTableSchool] = useState<any>({
     labels: [],
     datasets: [],
@@ -57,10 +58,11 @@ export const HomeScreen = () => {
     datasets: [],
   });
 
-  const [teacher_pie, setTeacherPie] = useState<any>({
+  const [studentsGroup, setStudentsGroup] = useState<any>({
     labels: [],
-    datasets: []
-  });
+    datasets: [],
+  })
+
 
 
   const getBirthdayMessage = (daysUntilBirthday: number) => {
@@ -93,6 +95,16 @@ export const HomeScreen = () => {
     },
   };
 
+  const studentsGroups = {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: "Alumnos por grupos"
+      }
+    }
+  }
+
 
   useEffect(() => {
     setLoading(true)
@@ -104,10 +116,21 @@ export const HomeScreen = () => {
         const students_in_teacher = data.students_in_teacher;
         const labels = districts.map((district: any) => district._id);
         const counts = districts.map((district: any) => district.count);
-        const labels1 = students_in_teacher.map((item: any) => `${item.teacher} ${item.group}`);
+        const studentGroups = students_in_teacher.map((item: any) => `${item.teacher} ${item.group}`);
         const counts1 = students_in_teacher.map((item: any) => item.count);
         const colors = counts.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.5)`);
-    
+
+        setStudentsGroup({
+          labels,
+          datasets: [
+            {
+              label: 'Número de Alumnos por grupo',
+              data: counts,
+              backgroundColor: colors,
+            },
+          ],
+        })
+
         setStudentsTableSchool({
           labels,
           datasets: [
@@ -172,7 +195,7 @@ export const HomeScreen = () => {
         <CardStats
           count={data.students}
           icon={<PiStudentBold size={24} />}
-          title='Alumnos'
+          title='Alumnos Registrados'
           description='Todos los alumnos registrados'
           loading={loading}
           path='/students'
@@ -180,7 +203,7 @@ export const HomeScreen = () => {
         <CardStats
           count={data.teachers}
           icon={<FaChalkboardTeacher size={24} />}
-          title='Profesores'
+          title='Profesores Registrados'
           description='Todos los profesores registrados'
           loading={loading}
           path='/teachers'
@@ -188,7 +211,7 @@ export const HomeScreen = () => {
         <CardStats
           count={data.total_groups}
           icon={<MdGroups size={24} />}
-          title='Grupos'
+          title='Grupos Registrados'
           description='Todos los grupos registrados'
           loading={loading}
           path='/groups'
@@ -201,6 +224,7 @@ export const HomeScreen = () => {
           loading={loading}
           path='/billing-students'
         />
+
         <Card
           title='Alumnos por barrio'
           className='col-start-1 md:col-span-2 lg:col-start-1 lg:col-span-3'
@@ -228,12 +252,19 @@ export const HomeScreen = () => {
           />
         </Card>
         <Card
+          title="Alumnos por grupos"
+          className='col-start-1 md:col-span-2 lg:col-start-1 lg:col-span-3'
+        >
+          <Doughnut options={studentsGroups} data={studentsGroup} />
+        </Card>
+
+        <Card
           title='Alumnos por escuela'
           className='col-start-1 md:col-span-2 lg:col-start-1 lg:col-span-3'
         >
-          <Bar options={studentsSchool} data={studentsTable} />
+          <Bar options={studentsSchool} data={studentsTableSchool} />
         </Card>
-        
+
       </div>
     </div >
   )
