@@ -1,41 +1,31 @@
 import { Select } from "antd";
 import { useEffect, useState } from "react";
 import { useTeacherContext } from "../context/teacher";
+import { getAllTeachers } from "../api/teacher";
 
 const { Option } = Select;
 
-const TeacherSelect = ({...props}) => {
-  const { teachers, loading, page, fetchTeacher } = useTeacherContext()
-  const [children, setChildren] = useState(teachers);
+const TeacherSelect = ({ ...props }) => {
+  const [loading, setLoading] = useState(false)
+  const [teachers, setTeachers] = useState([])
 
-  const onScroll = async (event: any) => {
-    const target = event.target;
-    if (
-      !loading &&
-      target.scrollTop + target.offsetHeight === target.scrollHeight
-    ) {
-      console.log("Load...");
-      target.scrollTo(0, target.scrollHeight);
-      fetchTeacher({
-        page: page + 1
-      })
-      setChildren([...children, ...teachers])
-    }
-  };
-
+  
   useEffect(() => {
-    fetchTeacher({})
-    setChildren(teachers)
+    getAllTeachers({ limit: 1000 })
+      .then(({ data }) => {
+        setTeachers(data.response)
+      })
+      .catch((error) => console.log(error))
+      .finally(() => setLoading(false))
   }, [])
 
   return (
-    <Select loading={loading} onPopupScroll={onScroll} {...props}>
-      {children.map(({ _id, firstname, lastname }) => (
+    <Select loading={loading}  {...props}>
+      {teachers.map(({ _id, firstname, lastname }, i: number) => (
         <Option key={_id} value={`${firstname} ${lastname}`}>
           {`${firstname} ${lastname}`}
         </Option>
       ))}
-      {loading && <Option>Loading...</Option>}
     </Select>
   );
 };
