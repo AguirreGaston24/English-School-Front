@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, Divider, Form, Select, Table, TableProps, TimePicker } from 'antd';
+import { Button, Card, Checkbox, Divider, Form, Input, Select, Table, TableProps, TimePicker } from 'antd';
 import { createSchemaFieldRule } from 'antd-zod';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -92,6 +92,14 @@ export const GroupsScreen = () => {
                   placeholder="Seleccionar un grupo"
                 />
               </Form.Item>
+            </Form.Item>
+            <Form.Item
+              label="Capacidad maxima de estudiantes"
+            >
+              <Input 
+              placeholder='Coloca la cantidad de estudiantes'
+              type='number'
+              />
             </Form.Item>
             <Divider>Horarios</Divider>
             <Form.Item label='Hora de inicio' name='start_date'>

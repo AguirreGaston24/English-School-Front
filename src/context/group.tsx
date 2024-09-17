@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { IGroup } from '../interfaces/group'
 import { Pagination, getAllGroups } from '../api/groups'
 import { useSearchParams } from 'react-router-dom'
+import { Becas } from '../interfaces/becas'
 
 interface GroupContextProps {
   handleFilterChange: (q?: [string, string][]) => void
@@ -10,6 +11,7 @@ interface GroupContextProps {
   page: number
   limit: number
   total: number
+  becas: Becas[]
 }
 
 interface GroupProviderProps {
@@ -33,12 +35,13 @@ export const GroupProvider = ({ children }: GroupProviderProps) => {
   const [total, setTotal] = useState(0)
   const [limit, setLimit] = useState(10)
   const [groups, setGroups] = useState([])
+  const [becas, setBecas] = useState<Becas[]>([]);
 
   const handleFilterChange = (q?: [string, string][]) => {
     console.log(q)
     setSearchParams((params) => {
       q?.forEach(([term, value]) => {
-        if (value == undefined || value === "") {
+        if (value === undefined || value === "") {
           return params.delete(term)
         }
         params.set(term, value)
@@ -80,7 +83,8 @@ export const GroupProvider = ({ children }: GroupProviderProps) => {
     loading,
     page,
     limit,
-    total
+    total,
+    becas
   }
 
   return (

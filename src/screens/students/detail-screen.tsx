@@ -25,11 +25,12 @@ type UserFormValue = z.infer<typeof StudentSchema>;
 const { useForm } = Form;
 
 const columns: TableProps<any>['columns'] = [
-  { title: 'Group', dataIndex: 'group', key: 'group', },
+  { title: 'Grupo', dataIndex: 'group', key: 'group', },
+  { title: "Espacios disponibles", dataIndex: "student", key: "student" },
   { title: 'Nivel', dataIndex: 'level', key: 'nivel' },
-  { title: 'Teacher', dataIndex: 'teacher', key: 'teacher' },
-  { title: 'Start Date', dataIndex: 'start_date', key: 'start_date', render: (_, record) => moment(record.start_date).format('h:mm A') },
-  { title: 'End Date', dataIndex: 'end_date', key: 'end_date', render: (_, record) => moment(record.end_date).format('h:mm A') },
+  { title: 'Profesor/a', dataIndex: 'teacher', key: 'teacher' },
+  { title: 'Horario Inicio', dataIndex: 'start_date', key: 'start_date', render: (_, record) => moment(record.start_date).format('h:mm A') },
+  { title: 'Horario Finaliza', dataIndex: 'end_date', key: 'end_date', render: (_, record) => moment(record.end_date).format('h:mm A') },
   {
     dataIndex: 'days',
     key: 'days',
