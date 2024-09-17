@@ -1,52 +1,28 @@
 export const BECAS = [
   {
-    label: "%10",
-    value: 0.10,
+    label: "INDIVIDUAL / TRANSFERENCIA",
+    name: "INDIVIDUAL / TRANSFERENCIA",
+    value: 2500,
     id: 1
   },
   {
-    label: "%15",
-    value: 0.15,
+    label: "HERMANOS",
+    name: "HERMANOS",
+    value: 2000,
     id: 2
   },
   {
-    label: "%20",
-    value: 0.20,
+    label: "PRIMOS",
+    name: "PRIMOS",
+    value: 2200,
     id: 3
   },
   {
-    label: "%25",
-    value: 0.25,
+    label: "BECA ANUAL",
+    name: "BECA ANUAL",
+    value: 1500,
     id: 4
   },
-  {
-    label: "%30",
-    value:  0.30,
-    id: 5
-  },
-  {
-    label: "%35",
-    value:  0.35,
-    id: 6
-  },
-  {
-    label: "%40",
-    value:  0.40,
-    id: 7
-  },
-  {
-    label: "%45",
-    value:  0.45,
-    id: 8
-  },
-  {
-    label: "%50",
-    value:  0.50,
-    id: 8
-  },
-  {
-    label: "%55",
-    value:  0.55,
-    id: 8
-  }
+
+  
 ]

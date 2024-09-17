@@ -1,5 +1,6 @@
 export interface Becas {
-  name: string,
-  price: number
+  label: string;
+  value: number;
+  id: number;
 }
 

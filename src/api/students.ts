@@ -4,7 +4,7 @@ import { IStudent } from "../interfaces/student"
 
 
 export const getAllStudents = (params?: Pagination) => {
-  const queryParams = new URLSearchParams(params as string | string[][]);
+  const queryParams = new URLSearchParams(params as any);
   return instance.get(`/students?${queryParams.toString()}`)
 }
 

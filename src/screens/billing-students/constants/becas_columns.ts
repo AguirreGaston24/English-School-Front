@@ -6,18 +6,17 @@ import { Becas } from "../../../interfaces/becas";
 export const BECAS_COLUMNS: ColumnsType<Becas> = [
   {
     title: 'Nombre de la Beca',
-    dataIndex: 'name',
+    dataIndex: 'name', // Asegúrate de que coincida con el campo "name" en el array de becas
     key: 'name',
   },
   {
     title: 'Precio',
-    dataIndex: 'price',
-    key: 'price',
-    render: (price: number) => `$${price}`, // Opcional: formato para mostrar el precio
+    dataIndex: 'value', // Asegúrate de que coincida con el campo "price"
+    key: 'value',
+    render: (value: number) => `${value}`, // Opcional: muestra el precio con formato
   },
   {
     title: 'Acciones',
-    dataIndex: 'action',
     key: 'action',
   },
 ];
