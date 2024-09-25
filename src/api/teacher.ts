@@ -4,6 +4,7 @@ import { ITeacher } from "../interfaces/teacher"
 export interface Pagination {
   page?: number,
   limit?: number,
+  term?: string,
 }
 
 export const getAllTeachers = (query: Pagination) => {
