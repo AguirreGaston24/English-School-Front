@@ -12,6 +12,7 @@ import { createGroup } from '../../api/groups';
 import { LEVELS } from '../../constant/levels';
 import { GROUPS } from '../../constant/groups';
 import { useGroupContext } from '../../context/group';
+import { ITeacher } from '../../interfaces/teacher';
 
 const { useForm } = Form;
 const rule = createSchemaFieldRule(groupSchema);
@@ -20,7 +21,7 @@ type UserFormValue = z.infer<typeof groupSchema>;
 const columns: TableProps<any>['columns'] = [
   { title: 'Grupo', dataIndex: 'group', key: 'group' },
   { title: 'Nivel', dataIndex: 'level', key: 'nivel' },
-  { title: 'Profesor/a', dataIndex: 'teacher', key: 'teacher' },
+  { title: 'Profesor/a', dataIndex: 'teacher_id', key: 'teacher_id', render: (_: any, { teacher_id }: { teacher_id: ITeacher }) => `${teacher_id.firstname} ${teacher_id.lastname}` },
   { title: 'Hora de inicio', dataIndex: 'start_date', key: 'start_date', render: (_: any, record: any) => moment(record.start_date).format('h:mm A') },
   { title: 'Hora de finalización', dataIndex: 'end_date', key: 'end_date', render: (_: any, record: any) => moment(record.end_date).format('h:mm A') },
   {
@@ -75,10 +76,10 @@ export const GroupsScreen = () => {
                 options={LEVELS}
               />
             </Form.Item>
-            <Form.Item label='Profesor/a' name='teacher' rules={[rule]}>
+            <Form.Item label='Profesor/a' name='teacher_id' rules={[rule]}>
               <Select
                 placeholder="Seleccionar un profe"
-                options={teachers.map(({ firstname, lastname }) => ({ label: `${firstname} ${lastname}`, value: `${firstname} ${lastname}` }))}
+                options={teachers.map(({ firstname, lastname, _id }) => ({ label: `${firstname} ${lastname}`, value: _id }))}
               />
             </Form.Item>
             <Form.Item label="Grupo" rules={[rule]}>
@@ -96,9 +97,9 @@ export const GroupsScreen = () => {
             <Form.Item
               label="Capacidad maxima de estudiantes"
             >
-              <Input 
-              placeholder='Coloca la cantidad de estudiantes'
-              type='number'
+              <Input
+                placeholder='Coloca la cantidad de estudiantes'
+                type='number'
               />
             </Form.Item>
             <Divider>Horarios</Divider>
