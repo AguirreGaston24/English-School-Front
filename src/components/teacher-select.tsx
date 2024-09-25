@@ -1,6 +1,5 @@
 import { Select } from "antd";
 import { useEffect, useState } from "react";
-import { useTeacherContext } from "../context/teacher";
 import { getAllTeachers } from "../api/teacher";
 
 const { Option } = Select;
@@ -21,7 +20,7 @@ const TeacherSelect = ({ ...props }) => {
 
   return (
     <Select loading={loading}  {...props}>
-      {teachers.map(({ _id, firstname, lastname }, i: number) => (
+      {teachers.map(({ _id, firstname, lastname }) => (
         <Option key={_id} value={`${firstname} ${lastname}`}>
           {`${firstname} ${lastname}`}
         </Option>
