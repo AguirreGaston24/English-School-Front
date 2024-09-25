@@ -1,6 +1,6 @@
 export interface Becas {
   label: string;
-  value: number;
+  value: string;
   id: number;
 }
 
