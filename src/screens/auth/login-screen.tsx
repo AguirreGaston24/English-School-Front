@@ -1,10 +1,10 @@
 import { createSchemaFieldRule } from "antd-zod";
 import { Button, Form, Input } from "antd";
+import { Link } from "react-router-dom";
 import { z } from "zod";
 
 import { cn } from "../../libs/utils"
 import { useAuthContext } from "../../context/auth";
-import {  useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   email: z.string({ required_error: 'El correo es requerido' }).email({ message: "Inserte un correo valido." }),
@@ -15,17 +15,11 @@ const rule = createSchemaFieldRule(formSchema);
 type UserFormValue = z.infer<typeof formSchema>;
 
 export const LoginScreen = () => {
-  const navigate = useNavigate()
   const { handleLogin, loginErrors, loading } = useAuthContext()
   const onSubmit = async (data: UserFormValue) => {
     console.log(data)
     handleLogin(data)
   };
-
-const handleNavigate = (path: string) => {
-  navigate(path)
-}
-
 
   return (
     <div className="relative h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
@@ -94,7 +88,7 @@ const handleNavigate = (path: string) => {
             </Form.Item>
             <div className="items-center justify-center flex-col text-center">
               <p className="mb-3">¿No tienes una cuenta?</p>
-              <a href="/register">Registrarse</a>
+              <Link to="/register">Registrarse</Link>
             </div>
           </Form>
         </div>
