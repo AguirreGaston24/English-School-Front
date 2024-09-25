@@ -1,8 +1,6 @@
 import { ColumnsType } from "antd/es/table";
 import { Becas } from "../../../interfaces/becas";
 
-
-
 export const BECAS_COLUMNS: ColumnsType<Becas> = [
   {
     title: 'Nombre de la Beca',
@@ -11,9 +9,9 @@ export const BECAS_COLUMNS: ColumnsType<Becas> = [
   },
   {
     title: 'Precio',
-    dataIndex: 'value', // Asegúrate de que coincida con el campo "price"
-    key: 'value',
-    render: (value: number) => `${value}`, // Opcional: muestra el precio con formato
+    dataIndex: 'price', // Asegúrate de que coincida con el campo "price"
+    key: 'price',
+    render: (value: number) => `$${value}`, // Opcional: muestra el precio con formato
   },
   {
     title: 'Acciones',
