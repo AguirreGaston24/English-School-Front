@@ -52,6 +52,7 @@ export const TeacherProvider = ({ children }: TeacherProviderProps) => {
     fetchTeacher({
       page: Number(searchParams.get('page') || 1),
       limit: Number(searchParams.get('limit') || 10),
+      term: searchParams.get('term') || '',
     });
   };
 
