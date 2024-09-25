@@ -16,7 +16,7 @@ export const BillingTeachersScreen = () => {
     console.log(value)
     getPaymentById(value)
       .then(({ data }) => {
-        console.log(data.results, 'data')
+        console.log(data, 'data')
         setData(data.results)
       })
       .catch((error) => {
