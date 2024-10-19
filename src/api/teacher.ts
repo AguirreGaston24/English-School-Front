@@ -22,7 +22,8 @@ export const createTeacher = (payload: Omit<ITeacher, '_id'>) => {
 }
 
 export const updateTeacher = (id: string, payload: Omit<ITeacher, '_id'>) => {
-  return instance.patch('/teachers/' + id, payload)
+  console.log('Updating teacher with id:', id, 'and payload:', payload); // Verifica el payload
+  return instance.patch('/teachers/' + id, payload);
 }
 
 export const deleteTeacher = (id: string) => {

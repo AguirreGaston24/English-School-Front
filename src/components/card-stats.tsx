@@ -8,6 +8,8 @@ interface CardStatsProps {
   loading: boolean
   icon: JSX.Element
   path: string
+  value: number;
+  color?: string;
 }
 
 export const CardStats = ({ count, description, icon, loading, title, path }: CardStatsProps) => {

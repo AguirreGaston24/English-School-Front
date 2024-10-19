@@ -6,6 +6,9 @@ export interface Pagination {
   school?: string
   order?: 'desc' | 'asc';
   sortBy?: string;
-  district?: string;
   group?: string;
+  email?: string;       // Agregado
+  district?: string;    // Agregado
+  firstname?: string;   // Agregado
+  lastname?: string;
 }

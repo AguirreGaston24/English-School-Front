@@ -1,13 +1,14 @@
 import { z } from "zod";
 
 export const groupSchema = z.object({
-  group: z.string({message: 'El nivel es requerido.'}),
-  number: z.string({message: 'El nivel es requerido.'}),
-  level: z.string({message: 'El nivel es requerido.'}),
-  teacher: z.string({message: 'El nivel es requerido.'}),
-  start_date: z.string({message: 'El nivel es requerido.'}),
-  end_date: z.string({message: 'El nivel es requerido.'}),
-  days: z.string({message: 'El nivel es requerido.'}),
-})
+  level: z.string().nonempty(),
+  teacher: z.string().optional(), // Cambia aquí si el nombre es diferente
+  group: z.string().nonempty(),
+  start_date: z.string().nonempty(),
+  end_date: z.string().nonempty(),
+  days: z.string().array(),
+  capacity: z.number().min(1, "Capacity must be at least 1"),
+
+});
 
 export type groupType = z.infer<typeof groupSchema>

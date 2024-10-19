@@ -28,8 +28,9 @@ const columns: TableProps<IGroup>['columns'] = [
   { title: 'Grupo', dataIndex: 'group', key: 'group', },
   { title: "Espacios disponibles", dataIndex: "student", key: "student" },
   { title: 'Nivel', dataIndex: 'level', key: 'nivel' },
-  { title: 'Profesor/a', dataIndex: 'teacher_id', key: 'teacher_id', render: (_, { teacher_id }) => `${teacher_id.firstname} ${teacher_id.lastname}` },
-  { title: 'Horario Inicio', dataIndex: 'start_date', key: 'start_date', render: (_, record) => moment(record.start_date).format('h:mm A') },
+  { title: 'Profesor/a', dataIndex: 'teacher_id', key: 'teacher_id', 
+    render: (_, { teacher_id }) => teacher_id ? `${teacher_id.firstname} ${teacher_id.lastname}` : 'Sin profesor' },
+    { title: 'Horario Inicio', dataIndex: 'start_date', key: 'start_date', render: (_, record) => moment(record.start_date).format('h:mm A') },
   { title: 'Horario Finaliza', dataIndex: 'end_date', key: 'end_date', render: (_, record) => moment(record.end_date).format('h:mm A') },
   {
     dataIndex: 'days',

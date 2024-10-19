@@ -1,37 +1,9 @@
 export const DAYS_OF_WEEK = [
-  {
-    label: "Lunes",
-    value: "L",
-    id: '1'
-  },
-  {
-    label: "Martes",
-    value: "M",
-    id: '2'
-  },
-  {
-    label: "Miercoles",
-    value: "X",
-    id: '3'
-  },
-  {
-    label: "Jueves",
-    value: "J",
-    id: '4'
-  },
-  {
-    label: "Viernes",
-    value: "V",
-    id: '5'
-  },
-  {
-    label: "Sabado",
-    value: "S",
-    id: '1'
-  },
-  {
-    label: "Domingo",
-    value: "D",
-    id: '1'
-  },
-]
+  { value: 'Lunes', label: 'Lunes' },
+  { value: 'Martes', label: 'Martes' },
+  { value: 'Miércoles', label: 'Miércoles' },
+  { value: 'Jueves', label: 'Jueves' },
+  { value: 'Viernes', label: 'Viernes' },
+  { value: 'Sábado', label: 'Sábado' },
+  { value: 'Domingo', label: 'Domingo' },
+];

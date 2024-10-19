@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom"
 import { HomeScreen, StudentDetails, StudentScreen } from "../screens"
 import { TeacherScreen } from "../screens/teacher"
 import { TeacherDetails } from "../screens/teacher/detail-screen"
-import { GroupsScreen } from "../screens/groups"
+import { GroupsScreen } from "../screens/groups/index"
 import { BillingStudentScreen } from "../screens/billing-students"
 import { BillingTeachersScreen } from "../screens/billing-teachers"
 

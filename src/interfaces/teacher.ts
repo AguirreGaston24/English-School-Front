@@ -11,4 +11,5 @@ export interface ITeacher {
   district: string
   phone: string
   dni: string
+  
 }

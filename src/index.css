@@ -66,3 +66,37 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.compact-table .ant-table-thead > tr > th,
+.compact-table .ant-table-tbody > tr > td {
+  padding: 4px 8px !important; /* Reducido el padding vertical de 2px a 1px */
+}
+
+.compact-table .ant-table-thead > tr > th {
+  font-size: 13px !important;
+}
+
+.compact-table .ant-table-tbody > tr > td {
+  font-size: 12px !important;
+}
+
+.compact-table .ant-table-row {
+  height: 60px !important; /* Reducido de 24px a 20px */
+}
+
+.compact-table .ant-table-thead > tr > th {
+  font-weight: 500 !important;
+}
+
+.compact-table .ant-table {
+  line-height: 1 !important; /* Reducido de 1.2 a 1 para disminuir aún más el espacio entre líneas */
+}
+
+.compact-table .ant-table-cell {
+  border-bottom: 0.5px solid #f0f0f0 !important;
+}
+
+/* Añadir esta nueva regla para eliminar el margen inferior de los elementos dentro de las celdas */
+.compact-table .ant-table-cell > * {
+  margin-bottom: -40px !important;
+}
