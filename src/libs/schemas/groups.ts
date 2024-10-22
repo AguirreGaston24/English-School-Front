@@ -1,14 +1,11 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const groupSchema = z.object({
-  level: z.string().nonempty(),
-  teacher: z.string().optional(), // Cambia aquí si el nombre es diferente
-  group: z.string().nonempty(),
-  start_date: z.string().nonempty(),
-  end_date: z.string().nonempty(),
-  days: z.string().array(),
-  capacity: z.number().min(1, "Capacity must be at least 1"),
-
+  start_date: z.string(), // o z.date() si manejas como Date
+  end_date: z.string(),   // o z.date() si manejas como Date
+  capacity: z.number(),
+  level: z.string(),
+  group: z.string(),
+  days: z.array(z.string()),
+  teacher: z.string(), // Asegúrate de que sea requerido
 });
-
-export type groupType = z.infer<typeof groupSchema>

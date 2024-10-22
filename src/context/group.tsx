@@ -43,9 +43,10 @@ export const GroupProvider = ({ children }: GroupProviderProps) => {
   const [becas, setBecas] = useState<Becas[]>([]);
 
   const handleFilterChange = (q?: [string, string][]) => {
+    if (!q) return; // No hacer nada si no hay filtro
+    
     setSearchParams((params) => {
-      // Eliminar parámetros existentes que estén vacíos
-      q?.forEach(([term, value]) => {
+      q.forEach(([term, value]) => {
         if (value) {
           params.set(term, value);
         } else {
@@ -55,34 +56,50 @@ export const GroupProvider = ({ children }: GroupProviderProps) => {
       return params;
     });
   };
+  
 
   const fetchData = async (query: Pagination) => {
     setLoading(true);
     try {
-      const { data } = await getAllGroups(query);
+      const cleanedQuery = Object.fromEntries(
+        Object.entries(query).filter(([_, value]) => value !== "")
+      );
+  
+      console.log('Fetching data with query:', cleanedQuery);
+      const { data } = await getAllGroups(cleanedQuery);
       const { metadata, response } = data;
   
       if (metadata && response) {
         setPage(metadata.current_page);
         setLimit(metadata.limit);
         setTotal(metadata.count);
-        setGroups(response); // Asegúrate de que 'response' tiene los campos 'students' y 'maxCapacity'
+        setGroups(response);
       }
-    } catch (error) {
-      console.error('Error fetching groups:', error);
+    } catch (error: any) {
+      console.error('Error fetching groups:', error.response?.data || error.message || error);
+      if (error.response?.data?.message) {
+        error.response.data.message.forEach((msg: string) => {
+          console.error(msg);
+        });
+      }
     } finally {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
-    fetchData({
-      page: Number(searchParams.get('page') || 1),
-      limit: Number(searchParams.get('limit') || 10),
+    const query = {
+      page: Math.max(Number(searchParams.get('page')) || 1, 1),  // Asegurar que page sea al menos 1
+      limit: Math.max(Number(searchParams.get('limit')) || 10, 1), // Asegurar que limit sea al menos 1
       level: searchParams.get('level') || '',
       group: searchParams.get('group') || '',
-    });
+    };
+  
+    console.log('Query for fetching:', query); // Para verificar el query
+    fetchData(query);
   }, [searchParams]);
+  
+  
 
   const handleDelete = async (id: string) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar este grupo?')) {

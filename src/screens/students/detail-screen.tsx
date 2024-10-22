@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import moment from "moment";
 import { z } from "zod";
-
+import {  getAllGroups } from '../../api/groups';
 import { createStudent, getStudent, updateStudent } from "../../api/students";
 import { StudentSchema } from "../../libs/schemas/student";
 import { DAYS_OF_WEEK } from "../../constant/days_of_week";
@@ -25,90 +25,110 @@ type UserFormValue = z.infer<typeof StudentSchema>;
 const { useForm } = Form;
 
 const columns: TableProps<IGroup>['columns'] = [
-  { title: 'Grupo', dataIndex: 'group', key: 'group', },
+  { title: 'Grupo', dataIndex: 'group', key: 'group' },
   { title: "Espacios disponibles", dataIndex: "student", key: "student" },
-  { title: 'Nivel', dataIndex: 'level', key: 'nivel' },
+  { title: 'Nivel', dataIndex: 'level', key: 'level' }, // key actualizado
   { title: 'Profesor/a', dataIndex: 'teacher_id', key: 'teacher_id', 
-    render: (_, { teacher_id }) => teacher_id ? `${teacher_id.firstname} ${teacher_id.lastname}` : 'Sin profesor' },
-    { title: 'Horario Inicio', dataIndex: 'start_date', key: 'start_date', render: (_, record) => moment(record.start_date).format('h:mm A') },
+    render: (_, { teacher_id }) => teacher_id ? `${teacher_id.firstname} ${teacher_id.lastname}` : 'Sin profesor' 
+  },
+  { title: 'Horario Inicio', dataIndex: 'start_date', key: 'start_date', render: (_, record) => moment(record.start_date).format('h:mm A') },
   { title: 'Horario Finaliza', dataIndex: 'end_date', key: 'end_date', render: (_, record) => moment(record.end_date).format('h:mm A') },
   {
     dataIndex: 'days',
     key: 'days',
-    width: 100,
-    children: DAYS_OF_WEEK.map(({ value }, i) => ({
+    children: DAYS_OF_WEEK.map(({ value }) => ({
       title: value,
       dataIndex: value,
       key: value,
-      width: 20,
       render: (_, record) => record.days.includes(value) ? 'X' : ''
     }))
-  },
+  }
 ];
 
+
 export const StudentDetails = () => {
-  const { groups, loading: loadg, handleFilterChange: fetchGroup } = useGroupContext()
   const { handleFilterChange, fetchData } = useStudent()
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const params = useParams()
-
-  const [form] = useForm()
+  const { teachers } = useTeacherContext();
+  const [groups, setGroups] = useState<IGroup[]>([]);
+  const [load, setLoad] = useState(false);
+  const [form] = useForm();
+  const [editingGroup, setEditingGroup] = useState<IGroup | null>(null);
   const id = params.id === 'new' ? false : params.id
   const action = id ? "Guardar Cambios" : "Crear Usuario";
   const message = id ? 'Exito en actualizar el usuario!.' : 'Exito en cargar el usuario!.';
 
 
   const onSubmit = async (data: UserFormValue) => {
-    setLoading(true)
+    setLoading(true);
     if (id) {
       updateStudent(id, {
         ...data,
         group: form.getFieldValue('group')
       })
-        .then(({ data }) => {
-          console.log(data)
-          navigate(-1)
-          handleFilterChange()
-          toast.success(message)
-        })
-        .catch((err) => {
-          console.log(err)
-          toast.error('Opss. Algo salio mal!.')
-        })
-        .finally(() => setLoading(false))
+      .then(({ data }) => {
+        navigate(-1);
+        handleFilterChange();
+        toast.success(message);
+      })
+      .catch((err) => {
+        toast.error('Opss. Algo salio mal!.');
+      })
+      .finally(() => setLoading(false));
     } else {
       createStudent({
         ...data,
         group: form.getFieldValue('group')
       })
-        .then(({ data }) => {
-          console.log(data)
-          navigate(-1)
-          handleFilterChange()
-          toast.success(message)
-        })
-        .catch((err) => {
-          console.log(err)
-          toast.error('Opss. Algo salio mal!.')
-        })
-        .finally(() => setLoading(false))
+      .then(({ data }) => {
+        navigate(-1);
+        handleFilterChange();
+        toast.success(message);
+      })
+      .catch((err) => {
+        toast.error('Opss. Algo salio mal!.');
+      })
+      .finally(() => setLoading(false));
+    }
+  };
+  
+  const loadGroups = async () => {
+    setLoad(true);
+    try {
+      const response = await getAllGroups({});
+      console.log(response.data);
+  
+      if (response.data && Array.isArray(response.data.response)) {
+        const formattedGroups = response.data.response.map((group: any) => ({
+          ...group,
+          days: group.days || [],
+          capacity: group.capacity || 0 // Asegúrate de incluir la capacidad aquí
+        }));
+        setGroups(formattedGroups);
+      } else {
+        console.error('Se esperaba un array, pero se recibió:', response.data);
+        setGroups([]);
+        toast.error('Error al cargar los grupos');
+      }
+    } catch (error) {
+      console.error('Error al cargar los grupos:', error);
+      toast.error('Error al cargar los grupos');
+    } finally {
+      setLoad(false);
     }
   };
 
-  const handleGroupChange = (value: string) => {
-    form.setFieldValue('level', value)
-    fetchGroup([['level', value]])
-  }
 
   const handleRowSelectionChange = (selectedRowId: any, selectedRows: IGroup[]) => {
-    const { group, teacher_id, level } = selectedRows[0]
-    console.log(`selectedRowId: ${selectedRowId}`, 'selectedGroup: ', selectedRows);
-    form.setFieldValue('group', group)
-    form.setFieldValue('level', level)
-    form.setFieldValue('teacher', `${teacher_id.firstname} ${teacher_id.lastname}`)
+    if (selectedRows.length > 0) {
+      const { group, teacher_id, level } = selectedRows[0];
+      form.setFieldValue('group', group);
+      form.setFieldValue('level', level);
+      form.setFieldValue('teacher', `${teacher_id.firstname} ${teacher_id.lastname}`);
+    }
   };
-
 
   useEffect(() => {
     if (!id) return;
@@ -122,6 +142,11 @@ export const StudentDetails = () => {
     };
     fetchStudent();
   }, [id, form]);
+
+  useEffect(() => {
+    loadGroups();
+  }, []);
+  
 
 
   return (
@@ -199,7 +224,7 @@ export const StudentDetails = () => {
                 name='level'
                 rules={[rule]}
               >
-                <Select options={LEVELS} onChange={handleGroupChange} allowClear />
+                <Select options={LEVELS} onChange={loadGroups} allowClear />
               </Form.Item>
             </div>
           </div>
@@ -233,16 +258,15 @@ export const StudentDetails = () => {
           </div>
           <Divider>Selección de grupo</Divider>
           <Table
-            scroll={{ x: 800 }}
-            columns={columns}
-            dataSource={groups}
-            loading={loadg}
-            rowKey="_id"
-            rowSelection={{
-              type: 'radio',
-              onChange: handleRowSelectionChange,
-            }}
-          />
+  scroll={{ x: 800 }}
+  columns={columns}
+  dataSource={groups}
+  rowKey="_id"
+  rowSelection={{
+    type: 'radio',
+    onChange: handleRowSelectionChange,
+  }}
+/>
           <Button className="col-start-2" loading={loading} htmlType="submit">
             {action}
           </Button>
