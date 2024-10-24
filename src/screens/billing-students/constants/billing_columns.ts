@@ -24,8 +24,8 @@ export const BILLING_COLUMNS = [
   },
   {
     title: 'TIPO DE BECA',
-    dataIndex: 'fee_type',
-    key: 'fee_type',
+    dataIndex: 'beca',
+    key: 'beca',
   },
   {
     title: 'MES DE PAGO',

@@ -16,29 +16,40 @@ import { IStudent } from "../../interfaces/student";
 import { BECAS_COLUMNS } from "./constants/becas_columns";
 import { PAYMENTS } from "../../constant/payments";
 
+
 export const BillingStudentScreen = () => {
   const { groups, loading, handleFilterChange } = useGroupContext();
   const [billings, setBillings] = useState<any>([]);
-  const [student_id, setStudentId] = useState('');
+  const [student_id, setStudentId] = useState<string | null>(null);
+  const [studentInfo, setStudentInfo] = useState<IStudent | null>(null);
   const [teacher_id, setTeacherId] = useState('');
   const [discount, setDiscount] = useState(0.00);
   const [phone, setPhone] = useState('');
   const [form] = useForm();
+  const [receiptNumber, setReceiptNumber] = useState(1); // Inicializa el contador en 1
+
 
   const handleGetUserGroup = (id: string) => {
     getStudent(id)
       .then(({ data }) => {
-        const { phone, _id } = data.response as IStudent;
-        setPhone(phone);
-        setStudentId(_id);
-        handleFilterChange([['group', data.response.group]]);
+        const { phone, _id, group, firstname, email } = data.response as IStudent;
+        if (!group) {
+          toast.error('El estudiante no está asignado a ningún grupo.');
+          setStudentInfo(null); 
+        } else {
+          setPhone(phone);
+          setStudentId(_id); // Asegúrate de que este ID se esté estableciendo
+          setStudentInfo(data.response);
+          handleFilterChange([['group', group]]);
+        }
       })
       .catch((error) => {
         console.log(error);
+        toast.error('Error al obtener la información del estudiante.');
       });
-    getBilling(id)
+
+      getBilling(id)
       .then(({ data }) => {
-        console.log(data);
         setBillings(data);
       })
       .catch((error) => {
@@ -46,45 +57,70 @@ export const BillingStudentScreen = () => {
       });
   };
 
-  const onSubmitBilling = (value: any) => {
-    createbilling({
-      ...value,
-      student_id,
-      teacher_id: groups[0] ? groups[0].teacher_id._id : null
-    })
+  const onSubmitBilling = (values: any) => {
+    // Verificar si se ha seleccionado un estudiante
+    if (!student_id) {
+      toast.error('Selecciona un estudiante.');
+      return; // Termina la función si no hay estudiante
+    }
+  
+    const { amount, month, payment_type, beca } = values;
+  
+    // Crear el objeto que se enviará al backend
+    const billingData = {
+      student_id: student_id,
+      receipt_number: receiptNumber, // Usa el estado actual para el número de recibo
+      month: month,
+      beca: beca,
+      amount: amount,
+      phone: phone,
+      payment_type: payment_type,
+      description: "Descripción del pago",
+    };
+  
+    console.log(billingData); // Verifica el contenido del objeto
+  
+    // Llamar a la API de facturación
+    createbilling(billingData)
       .then(({ data }) => {
+        toast.success('Facturación creada con éxito!');
+        
+        // Aquí es donde incrementas el número de recibo
+        setReceiptNumber(prev => prev + 1);
+        
+        // Recuperar la facturación después de crearla
         getBilling(student_id)
           .then(({ data }) => {
-            console.log(data);
-            setBillings(data);
+            setBillings(data); // Actualiza el historial de pagos
           })
           .catch((error) => {
-            console.log(error);
+            console.error('Error al recuperar la facturación:', error);
           });
-        toast.success('Facturación creada con exito!.');
       })
       .catch((error) => {
-        console.log(error);
-        toast.error('Error al crear la facturacion!.');
+        console.error('Error al crear la facturación:', error);
+        toast.error('Error al crear la facturación!');
       });
   };
+  
 
-  const amount = Form.useWatch('amount', form);
-  const ds = Form.useWatch('scholarshipType');
+  const amount = Form.useWatch('amount', form); // Monto de la cuota
+  const feeType = Form.useWatch('beca', form); // Tipo de beca
 
   useEffect(() => {
     const calculateTotal = () => {
-      const amount = form.getFieldValue('amount') || 0;
-      const discount = form.getFieldValue('scholarshipType') || 0;
-      const total = amount - (amount * discount) / 100;
-      form.setFieldValue('feeAmount', JSON.stringify(total));
-      setDiscount(total);
+      const baseAmount = amount || 0; // Monto de la cuota
+      const selectedBeca = BECAS.find(b => b.value === feeType); // Busca la beca seleccionada
+      const discountAmount = selectedBeca ? selectedBeca.price : 0; // Obtiene el precio de la beca
+      const total = baseAmount - discountAmount; // Calcula el total
+
+      // Actualiza el campo "Debe" con el total calculado
+      form.setFieldValue('debe_amount', total);
     };
+
     calculateTotal();
-  }, [amount, ds]);
-
-  console.log(discount);
-
+  }, [amount, feeType, form]);
+  
 
   return (
     <div>
@@ -93,32 +129,68 @@ export const BillingStudentScreen = () => {
           Historial sobre pagos de alumnos
         </h2>
         <Card title="Seleccionar un alumno" className="col-span-1 lg:col-span-4 p-5">
-          <Form layout="vertical">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <Form.Item label='Lista de Alumnos'>
-                <StudentSelect className="w-full" onChange={(_: string, value: any) => handleGetUserGroup(value.key)} />
-              </Form.Item>
-              <Form.Item label='N° de telefono:'>
-                <Input placeholder="N° de telefono" value={phone} onChange={({ target }) => setPhone(target.value)} />
-              </Form.Item>
-              <div className="flex items-center justify-center">
-                <Button type="primary" className="w-full md:w-auto">
-                  Enviar Recibo
-                </Button>
-              </div>
-            </div>
-          </Form>
-        </Card>
+  <Form
+    form={form}
+    layout="vertical"
+    requiredMark={false}
+    onFinish={onSubmitBilling}
+  >
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <Form.Item label="Lista de Alumnos">
+        <StudentSelect 
+          className="w-full" 
+          onChange={(_: string, value: any) => handleGetUserGroup(value.key)} 
+        />
+      </Form.Item>
+      <Form.Item label="N° de telefono:">
+        <Input 
+          placeholder="N° de telefono" 
+          value={phone} 
+          onChange={({ target }) => setPhone(target.value)} 
+        />
+      </Form.Item>
 
-        <Card title="Informacion del alumno seleccionado" className="col-span-1 lg:col-span-4">
-          <Table
-            loading={loading}
-            dataSource={groups}
-            columns={GROUP_COLUMNS}
-            scroll={{ x: 800 }}
-          />
-        </Card>
+      <Form.Item label="Mes a pagar:" name="month" required>
+        <Select placeholder="Seleccionar un mes" options={MONTHS} />
+      </Form.Item>
+      <Form.Item label="Tipo de beca:" name="beca" required>
+        <Select placeholder="Selecciona una beca" options={BECAS} />
+      </Form.Item>
+      <Form.Item label="Forma de pago:" name="payment_type" required>
+        <Select placeholder="Selecciona una forma de pago" options={PAYMENTS} />
+      </Form.Item>
+      <Form.Item label="Valor de la cuota:" name="amount" required>
+        <Input type="number" placeholder="Ingresa el valor de la cuota" />
+      </Form.Item>
+      <Form.Item label="Debe:" name="debe_amount">
+        <Input type="number" placeholder="$00.0" readOnly />
+      </Form.Item>
+    </div>
 
+    <div className="flex items-center justify-center mt-5">
+      <Button type="primary" htmlType="submit" className="w-full md:w-auto">
+        Enviar Recibo
+      </Button>
+    </div>
+  </Form>
+</Card>
+
+<Card title="Información del alumno seleccionado" className="col-span-1 lg:col-span-4">
+  <div className="flex justify-between">
+    <div className="flex-1">
+      <strong>Nombre: </strong> <span>{studentInfo?.firstname}</span>
+    </div>
+    <div className="flex-1 text-center">
+      <strong>Email: </strong> <span>{studentInfo?.email}</span>
+    </div>
+    <div className="flex-1 text-center">
+      <strong>Teléfono: </strong> <span>{phone}</span>
+    </div>
+    <div className="flex-1 text-center">
+      <strong>Grupo: </strong> <span>{studentInfo?.group}</span>
+    </div>
+  </div>
+</Card>
         <Card title='Detalle del recibo' className="col-span-1 lg:col-span-4">
           <div className="grid gap-4 grid-cols-1 md:grid-cols-4">
             <Table
@@ -147,40 +219,6 @@ export const BillingStudentScreen = () => {
         <h2 className="text-lg font-bold col-span-1 lg:col-span-4 text-center md:text-start">
           Registrar pagos de alumnos
         </h2>
-        <Card className="col-span-1 lg:col-span-4 md:p-5">
-          <Form
-            form={form}
-            layout="vertical"
-            requiredMark={false}
-            onFinish={onSubmitBilling}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <Form.Item label="N° de recibo" name="receipt_number">
-                <Input type="number" placeholder="0000000" />
-              </Form.Item>
-              <Form.Item label="Mes a pagar:" name="month">
-                <Select placeholder="Seleccionar un mes" options={MONTHS} />
-              </Form.Item>
-              <Form.Item label="Tipo de beca:" name="fee_type">
-                <Select placeholder="Selecciona una beca" options={BECAS} />
-              </Form.Item>
-              <Form.Item label="Forma de pago:" name="payment_type">
-                <Select placeholder="Selecciona una forma de pago" options={PAYMENTS} />
-              </Form.Item>
-              <Form.Item label="Valor de la cuota:" name="amount">
-                <Input type="number" placeholder="Ingresa el valor de la cuota" />
-              </Form.Item>
-              <Form.Item label="Debe:" name="debe_amount">
-                <Input type="number" placeholder="$00.0" />
-              </Form.Item>
-              <div className="flex w-full justify-center md:col-span-2">
-                <Button htmlType="submit" size="large" className="text-white" type="primary">
-                  Guardar
-                </Button>
-              </div>
-            </div>
-          </Form>
-        </Card>
 
         <h2 className="text-lg font-bold col-span-1 lg:col-span-4 text-center md:text-start">
           Becas Actuales
@@ -196,4 +234,4 @@ export const BillingStudentScreen = () => {
       </div>
     </div>
   );
-};
+}
