@@ -39,3 +39,9 @@ export const updateBilling = (id: string, payload: Billing) => {
 export const deleteBilling = (id: string) => {
   return instance.delete('/billing/' + id);
 }
+
+export const downloadPDF = (id: string) => {
+  return instance.get(`/billing/${id}/download-pdf`, {
+    responseType: 'blob', // Importante para descargar archivos
+  });
+};

@@ -1,12 +1,12 @@
-import { Button, Card, Form, Input, Select, Table } from "antd";
+import { Button, Card, Form, Input, Modal, Select, Table } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
+import moment from "moment";
 import StudentSelect from "../../components/student-select";
 import { useGroupContext } from "../../context/group";
 import { getStudent } from "../../api/students";
-import { createbilling, getAllBilling, getBilling } from "../../api/billing";
+import { createbilling, deleteBilling, getAllBilling, getBilling } from "../../api/billing";
 import { MONTHS } from "../../constant/months";
 import { BECAS } from "../../constant/becas";
 import { PAY_COLUMNS } from "./constants/pay_columns";
@@ -14,6 +14,9 @@ import { BILLING_COLUMNS } from "./constants/billing_columns";
 import { IStudent } from "../../interfaces/student";
 import { BECAS_COLUMNS } from "./constants/becas_columns";
 import { PAYMENTS } from "../../constant/payments";
+import { jsPDF } from "jspdf";
+import { FaArrowLeft } from "react-icons/fa6";
+
 
 export const BillingStudentScreen = () => {
   const { groups, loading, handleFilterChange } = useGroupContext();
@@ -25,6 +28,7 @@ export const BillingStudentScreen = () => {
   const [phone, setPhone] = useState('');
   const [form] = useForm();
   const [receiptNumber, setReceiptNumber] = useState(1); // Inicializa el contador en 1
+  const { confirm } = Modal; // Extract confirm from Modal
 
   const handleGetUserGroup = (id: string) => {
     getStudent(id)
@@ -32,11 +36,11 @@ export const BillingStudentScreen = () => {
         const { phone, _id, group, firstname, email } = data.response as IStudent;
         if (!group) {
           toast.error('El estudiante no está asignado a ningún grupo.');
-          setStudentInfo(null); 
+          setStudentInfo(null); // Asegúrate de que `studentInfo` sea null si no hay grupo
         } else {
           setPhone(phone);
           setStudentId(_id);
-          setStudentInfo(data.response);
+          setStudentInfo(data.response); // Establece `studentInfo` correctamente
           handleFilterChange([['group', group]]);
         }
       })
@@ -45,6 +49,7 @@ export const BillingStudentScreen = () => {
         toast.error('Error al obtener la información del estudiante.');
       });
   };
+  
 
   // Función para obtener los recibos, dependiendo si hay un estudiante seleccionado o no
   const fetchBillings = (studentId: string | null) => {
@@ -52,22 +57,27 @@ export const BillingStudentScreen = () => {
       getBilling(studentId)
         .then(({ data }) => {
           setBillings(data);
+          // Actualizar el número de recibo basado en el último recibo
+          const lastReceiptNumber = data.length > 0 ? Math.max(...data.map((billing: any) => billing.receipt_number)) : 0;
+          setReceiptNumber(lastReceiptNumber + 1);
         })
         .catch((error) => {
           console.log(error);
         });
     } else {
-      // Si no hay estudiante seleccionado, obtener todos los recibos
-      // Aquí asumo que tienes una función en tu API para obtener todos los recibos
-      getAllBilling({}) // Ajusta esto según tu API
+      getAllBilling({}) 
         .then(({ data }) => {
           setBillings(data);
+          // Actualizar el número de recibo basado en el último recibo
+          const lastReceiptNumber = data.length > 0 ? Math.max(...data.map((billing: any) => billing.receipt_number)) : 0;
+          setReceiptNumber(lastReceiptNumber + 1);
         })
         .catch((error) => {
           console.log(error);
         });
     }
   };
+  
 
   useEffect(() => {
     fetchBillings(student_id);
@@ -96,15 +106,15 @@ export const BillingStudentScreen = () => {
     console.log(billingData); // Verifica el contenido del objeto
 
     createbilling(billingData)
-      .then(({ data }) => {
-        toast.success('Facturación creada con éxito!');
-        setReceiptNumber(prev => prev + 1);
-        fetchBillings(student_id); // Actualiza el historial de pagos
-      })
-      .catch((error) => {
-        console.error('Error al crear la facturación:', error);
-        toast.error('Error al crear la facturación!');
-      });
+    .then(({ data }) => {
+      toast.success('Facturación creada con éxito!');
+      setReceiptNumber(prev => prev + 1); // Incrementar el número de recibo
+      fetchBillings(student_id); // Actualizar el historial de pagos
+    })
+    .catch((error) => {
+      console.error('Error al crear la facturación:', error);
+      toast.error('Error al crear la facturación!');
+    });
   };
 
   const amount = Form.useWatch('amount', form); // Monto de la cuota
@@ -121,6 +131,146 @@ export const BillingStudentScreen = () => {
 
     calculateTotal();
   }, [amount, feeType, form]);
+
+  const generatePDF = (student: IStudent, billing: any) => {
+    console.log("Generating PDF for:", student, billing); // Verifica los datos recibidos
+    if (!billing) {
+      toast.error('No se encontraron detalles de la facturación.');
+      return;
+    }
+  
+    const doc = new jsPDF();
+  
+    // Establecer un fondo de color
+    doc.setFillColor(240, 240, 240); // Color de fondo (gris claro)
+    doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
+  
+    // Título
+    doc.setFontSize(22);
+    doc.setTextColor(40, 40, 40); // Color de texto
+    doc.text('Recibo de Pagos', doc.internal.pageSize.width / 2, 20, { align: 'center' });
+  
+    // Separador
+    doc.setDrawColor(150);
+    doc.line(10, 30, doc.internal.pageSize.width - 10, 30); // Línea horizontal
+  
+    // Información del estudiante
+    doc.setFontSize(16);
+    doc.text(`Nombre: ${student.firstname} ${student.lastname}`, 10, 40);
+    doc.text(`Email: ${student.email}`, 10, 50);
+    doc.text(`Teléfono: ${student.phone}`, 10, 60);
+    
+    // Espaciado
+    doc.text(``, 10, 70); // Espacio vacío
+    
+    // Información de la facturación
+    doc.setFontSize(16);
+    doc.setTextColor(60, 60, 60); // Color de texto para la sección de facturación
+    doc.text(`Detalles de Facturación:`, 10, 80);
+  
+    // Información de la factura
+    doc.setFontSize(14);
+    doc.text(`Número de Recibo: ${billing.receipt_number}`, 10, 90);
+    doc.text(`Mes: ${billing.month}`, 10, 100);
+    doc.text(`Monto: $${billing.amount.toFixed(2)}`, 10, 110);
+    doc.text(`Fecha de Pago: ${moment(billing.createdAt).format('DD-MM-YYYY')}`, 10, 120);
+    doc.text(`Tipo de Beca: ${billing.beca}`, 10, 130);
+  
+    // Separador
+    doc.setDrawColor(150);
+    doc.line(10, 140, doc.internal.pageSize.width - 10, 140); // Línea horizontal
+  
+    // Mensaje de agradecimiento
+    doc.setFontSize(12);
+    doc.setTextColor(80, 80, 80); // Color de texto
+    doc.text('¡Gracias por su pago!', doc.internal.pageSize.width / 2, 150, { align: 'center' });
+  
+    // Guardar el PDF
+    doc.save(`recibo_${student.firstname}_${billing.month}.pdf`);
+  };
+
+  const showDeleteConfirm = (billingId: string) => {
+    confirm({
+      title: '¿Estás seguro de que deseas eliminar este recibo?',
+      icon: <FaArrowLeft />,
+      content: 'Esta acción no se puede deshacer.',
+      okText: 'Sí',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        deleteBilling(billingId)
+          .then(() => {
+            toast.success("Recibo eliminado exitosamente");
+            fetchBillings(student_id); // Recargar la lista de recibos
+          })
+          .catch((error) => {
+            console.error("Error al eliminar el recibo:", error);
+            toast.error("Error al eliminar el recibo");
+          });
+      },
+      onCancel() {
+        console.log('Cancelado');
+      },
+    });
+  };
+  
+  
+  // Definir las columnas de la tabla
+  const BILLING_COLUMNS = [
+    {
+      title: 'N° RECIBO',
+      dataIndex: 'receipt_number',
+      key: 'receipt_number',
+    },
+    {
+      title: 'FECHA DE PAGO',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (text: any) => moment(text).format('DD-MM-YYYY'),
+    },
+    {
+      title: 'TIPO DE BECA',
+      dataIndex: 'beca',
+      key: 'beca',
+    },
+    {
+      title: 'MES DE PAGO',
+      dataIndex: 'month',
+      key: 'month',
+    },
+    {
+      title: 'VALOR',
+      dataIndex: 'amount',
+      key: 'amount',
+    },
+    {
+      title: 'ACCIONES',
+      key: 'actions',
+      render: (text: any, record: any) => ( // Ensure 'record' is defined here
+        <>
+          <Button 
+            type="default" 
+            onClick={() => {
+              if (studentInfo) {
+                generatePDF(studentInfo, record);
+              } else {
+                toast.error("Información del estudiante no disponible.");
+              }
+            }}
+          >
+            Descargar PDF
+          </Button>
+          <Button
+            type="primary" // Cambiado de "danger" a "primary"
+            onClick={() => showDeleteConfirm(record._id)} // Llamar a la función de confirmación de eliminación
+            style={{ marginLeft: 8 }} // Espaciado entre los botones
+          >
+            Eliminar
+          </Button>
+        </>
+      ),
+    }
+  ];
 
   return (
     <div>

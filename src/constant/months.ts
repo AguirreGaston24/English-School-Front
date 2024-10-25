@@ -48,5 +48,15 @@ export const MONTHS = [
     label: "OCTUBRE",
     value: "OCTUBRE",
     id: 8
+  },
+  {
+    label: "NOVIEMBRE",
+    value: "NOVIEMBRE",
+    id: 8
+  },
+  {
+    label: "DICIEMBRE",
+    value: "DICIEMBRE",
+    id: 8
   }
 ]
