@@ -141,7 +141,7 @@ export const TeacherDetails = () => {
                 label='Fecha de Nacimiento'
                 name='birth_date'
                 rules={[rule]}
-              >
+              > 
                 <BlueCalendarInput type="date" />
               </Form.Item>
 

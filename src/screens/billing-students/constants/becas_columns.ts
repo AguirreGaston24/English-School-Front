@@ -13,8 +13,4 @@ export const BECAS_COLUMNS: ColumnsType<Becas> = [
     key: 'price',
     render: (value: number) => `$${value}`, // Opcional: muestra el precio con formato
   },
-  {
-    title: 'Acciones',
-    key: 'action',
-  },
 ];

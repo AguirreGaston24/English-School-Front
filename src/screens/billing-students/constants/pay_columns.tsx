@@ -23,14 +23,14 @@ export const PAY_COLUMNS = [
   },
   {
     title: 'Debe',
-    dataIndex: 'deuda_month',
-    key: 'deuda_month',
-    render: (pay_month: any, record: any) => (
+    dataIndex: 'debe',
+    key: 'debe',
+    render: (debe: any, record: any) => (
       <Tag
-        color={pay_month ? 'green' : 'red'}
+        color={debe ? 'green' : 'red'}
       // onClick={() => handleUpdatePaymentStatus(record.studentId, record.month, record.year, !pay_month)}
       >
-        {pay_month ? 'SI' : 'NO'}
+        {debe ? 'SI' : 'NO'}
       </Tag>
     ),
   },

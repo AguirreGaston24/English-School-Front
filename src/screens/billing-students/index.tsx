@@ -10,7 +10,7 @@ import { createbilling, deleteBilling, getAllBilling, getBilling } from "../../a
 import { MONTHS } from "../../constant/months";
 import { BECAS } from "../../constant/becas";
 import { PAY_COLUMNS } from "./constants/pay_columns";
-import { BILLING_COLUMNS } from "./constants/billing_columns";
+import { BILLING } from "./constants/billing_columns";
 import { IStudent } from "../../interfaces/student";
 import { BECAS_COLUMNS } from "./constants/becas_columns";
 import { PAYMENTS } from "../../constant/payments";
@@ -83,6 +83,8 @@ export const BillingStudentScreen = () => {
     fetchBillings(student_id);
   }, [student_id]);
 
+  
+
   const onSubmitBilling = (values: any) => {
     // Verificar si se ha seleccionado un estudiante
     if (!student_id) {
@@ -90,17 +92,19 @@ export const BillingStudentScreen = () => {
       return; // Termina la función si no hay estudiante
     }
 
-    const { amount, month, payment_type, beca } = values;
+    const { amount, month, payment_type, beca, debe_amount, amount_to_pay  } = values;
 
     const billingData = {
       student_id: student_id,
-      receipt_number: receiptNumber,
       month: month,
       beca: beca,
       amount: amount,
       phone: phone,
       payment_type: payment_type,
       description: "Descripción del pago",
+      debe_amount: debe_amount,
+      amount_to_pay: amount_to_pay,
+      group_id: studentInfo?.group
     };
 
     console.log(billingData); // Verifica el contenido del objeto
@@ -117,20 +121,22 @@ export const BillingStudentScreen = () => {
     });
   };
 
-  const amount = Form.useWatch('amount', form); // Monto de la cuota
+  const amount_to_pay = Form.useWatch('amount_to_pay', form); // Define amount_to_pay here
   const feeType = Form.useWatch('beca', form); // Tipo de beca
 
   useEffect(() => {
     const calculateTotal = () => {
-      const baseAmount = amount || 0; // Monto de la cuota
-      const selectedBeca = BECAS.find(b => b.value === feeType); // Busca la beca seleccionada
-      const discountAmount = selectedBeca ? selectedBeca.price : 0; // Obtiene el precio de la beca
-      const total = baseAmount - discountAmount; // Calcula el total
-      form.setFieldValue('debe_amount', total); // Actualiza el campo "Debe"
+      const becaAmount = BECAS.find(b => b.value === feeType)?.price || 0; // Obtiene el valor de la beca
+      const userAmountToPay = amount_to_pay || 0; // Valor ingresado por el usuario
+      const resta = becaAmount - userAmountToPay; // Calcula la diferencia
+      const total = resta < 0 ? 0 : resta; // Usa un operador ternario para asignar el valor
+      form.setFieldValue('amount', becaAmount); // Asigna el valor de la beca a "amount"
+      form.setFieldValue('debe_amount', total); // Asigna el resultado a "debe_amount"
     };
-
+  
     calculateTotal();
-  }, [amount, feeType, form]);
+  }, [amount_to_pay, feeType, form]);
+  
 
   const generatePDF = (student: IStudent, billing: any) => {
     console.log("Generating PDF for:", student, billing); // Verifica los datos recibidos
@@ -244,15 +250,20 @@ export const BillingStudentScreen = () => {
       key: 'amount',
     },
     {
+      title: 'DEBE',
+      dataIndex: 'debe_amount',
+      key: 'debe_amount',
+    },
+    {
       title: 'ACCIONES',
       key: 'actions',
-      render: (text: any, record: any) => ( // Ensure 'record' is defined here
+      render: (text: any, record: any) => (
         <>
           <Button 
             type="default" 
             onClick={() => {
-              if (studentInfo) {
-                generatePDF(studentInfo, record);
+              if (record.studentInfo) {
+                generatePDF(record.studentInfo, record);
               } else {
                 toast.error("Información del estudiante no disponible.");
               }
@@ -261,17 +272,17 @@ export const BillingStudentScreen = () => {
             Descargar PDF
           </Button>
           <Button
-            type="primary" // Cambiado de "danger" a "primary"
-            onClick={() => showDeleteConfirm(record._id)} // Llamar a la función de confirmación de eliminación
-            style={{ marginLeft: 8 }} // Espaciado entre los botones
+            type="primary"
+            onClick={() => showDeleteConfirm(record._id)}
+            style={{ marginLeft: 8 }}
           >
             Eliminar
           </Button>
         </>
       ),
-    }
+    },
   ];
-
+  
   return (
     <div>
       <div className="grid gap-4 grid-cols-1 lg:grid-cols-4">
@@ -317,11 +328,14 @@ export const BillingStudentScreen = () => {
               <Form.Item label="Tipo de beca:" name="beca" required>
                 <Select placeholder="Selecciona una beca" options={BECAS} />
               </Form.Item>
-              <Form.Item label="Forma de pago:" name="payment_type" required>
+              <Form.Item label="Forma de pago:" name="payment_type"  required>
                 <Select placeholder="Selecciona una forma de pago" options={PAYMENTS} />
               </Form.Item>
               <Form.Item label="Valor de la cuota:" name="amount" required>
                 <Input type="number" placeholder="Ingresa el valor de la cuota" />
+              </Form.Item>
+              <Form.Item label="Monto A Pagar:" name="amount_to_pay">
+                <Input type="number" placeholder="$00.0" />
               </Form.Item>
               <Form.Item label="Debe:" name="debe_amount">
                 <Input type="number" placeholder="$00.0" readOnly />
@@ -363,7 +377,7 @@ export const BillingStudentScreen = () => {
               dataSource={MONTHS.map((month: any) => ({
                 month: month.label,
                 pay_month: billings.some((billing: any) => billing.month === month.value && billing.pay_month),
-                deuda_month: billings.some((billing: any) => billing.month === month.value && !billing.pay_month),
+                debe: billings.some((billing: any) => billing.month === month.value && billing.debe),
                 key: month.value
               }))}
               columns={PAY_COLUMNS}
@@ -379,8 +393,22 @@ export const BillingStudentScreen = () => {
               columns={BILLING_COLUMNS}
               rowKey="_id"
             />
+
+ 
           </div>
         </Card>
+      </div>    
+      <div className="table-container"> {/* Añadido el contenedor para la tabla */}
+      <Table
+        className="table" // Añadido el estilo para la tabla
+        columns={BECAS_COLUMNS} // Usa las columnas definidas
+        dataSource={BECAS} // Usa el array BECAS como la fuente de datos
+        rowKey="id" // Asegúrate de que esta clave sea única para cada fila
+        pagination={{
+          pageSize: 10,
+        }}
+        scroll={{ x: 'max-content' }} // Permite que la tabla se desplace horizontalmente si es necesario
+      />   
       </div>
     </div>
   );

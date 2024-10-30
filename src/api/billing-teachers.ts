@@ -8,8 +8,9 @@ export interface Pagination {
 export const getAllBillingTeachers = (query: Pagination) => {
   const params = new URLSearchParams(query as {})
 
-  return instance.get('/billing?' + params.toString())
+  return instance.get('/payment?' + params.toString())
 }
+
 
 export const getBillingTeachers = (id: string) => {
   return instance.get('/billing/' + id)

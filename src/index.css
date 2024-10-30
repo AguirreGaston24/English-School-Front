@@ -100,3 +100,11 @@ body {
 .compact-table .ant-table-cell > * {
   margin-bottom: -40px !important;
 }
+
+.table-container {
+  width: 100%; /* Hace que el contenedor ocupe el 100% del ancho */
+}
+
+.table {
+  width: 100%; /* Hace que la tabla ocupe el 100% del contenedor */
+}

@@ -36,6 +36,7 @@ const columns = (onEdit: (group: any) => void, onDelete: (id: string) => void) =
     title: 'Capacidad máxima',
     dataIndex: 'capacity',
     key: 'capacity',
+    render: (text: any, record: any) => `${record.studentCount}/${record.capacity}`, // Personaliza la visualización
   },
   {
     dataIndex: 'days',

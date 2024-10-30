@@ -1,6 +1,6 @@
 import moment from "moment";
 
-export const BILLING_COLUMNS = [
+export const BILLING = [
   {
     title: 'N° RECIBO',
     dataIndex: 'receipt_number',

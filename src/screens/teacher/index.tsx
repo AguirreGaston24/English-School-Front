@@ -34,6 +34,25 @@ export const TeacherScreen = () => {
   const columns: TableProps<ITeacher>['columns'] = [
     { title: 'Nombre', dataIndex: 'firstname', key: 'firstname' },
     { title: 'Apellido', dataIndex: 'lastname', key: 'lastname' },
+    {
+      title: 'Grupos',
+      dataIndex: 'group_names',
+      key: 'group_names',
+      render: (groups: string[]) => (
+        <div>
+          {groups.length > 0 ? (
+            groups.map((group, index) => (
+              <span key={index}>
+                {group}
+                {index < groups.length - 1 && ' - '} {/* Agrega un guion si no es el último elemento */}
+              </span>
+            ))
+          ) : (
+            <span>-</span> // Muestra un guion si no hay grupos
+          )}
+        </div>
+      ),
+    },    
     { title: 'Correo', dataIndex: 'email', key: 'email' },
     { title: 'Teléfono', dataIndex: 'phone', key: 'phone', width: 150 },
     { title: 'Dirección', dataIndex: 'address', key: 'address', ellipsis: true },
@@ -91,13 +110,6 @@ export const TeacherScreen = () => {
     },
   ];
 
-  useEffect(() => {   
-    const interval = setInterval(() => {
-      fetchTeacher({ limit, page });
-    }, 5000); // Cada 5 segundos
-  
-    return () => clearInterval(interval); // Limpiar el intervalo al desmontar
-  }, [limit, page]);
 
   return (
     <div>
